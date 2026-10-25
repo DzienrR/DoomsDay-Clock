@@ -1136,9 +1136,23 @@ function initCustomScenarioBuilder() {
       const chip = document.createElement("div");
       chip.className = "preset-chip";
       chip.style.borderColor = badgeColor;
-      chip.innerHTML = `<strong>${title}</strong> (${sign}) <span style="margin-left:6px; cursor:pointer;" title="Remove">✕</span>`;
 
-      chip.querySelector("span").addEventListener("click", () => {
+      const strongEl = document.createElement("strong");
+      strongEl.textContent = title;
+
+      const textNode = document.createTextNode(` (${sign}) `);
+
+      const closeSpan = document.createElement("span");
+      closeSpan.style.marginLeft = "6px";
+      closeSpan.style.cursor = "pointer";
+      closeSpan.title = "Remove";
+      closeSpan.textContent = "✕";
+
+      chip.appendChild(strongEl);
+      chip.appendChild(textNode);
+      chip.appendChild(closeSpan);
+
+      closeSpan.addEventListener("click", () => {
         chip.remove();
         if (typeof updateSimulatorCalculation === "function") updateSimulatorCalculation();
       });
