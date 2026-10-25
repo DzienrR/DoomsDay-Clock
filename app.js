@@ -774,6 +774,7 @@ function loadCachedOfficialReading() {
 
 // Convert seconds to 24h clock string (e.g. 85s -> "23:58:35")
 function format24HourTime(seconds) {
+  if (seconds === 0) return "00:00:00";
   const totalSecondsBeforeMidnight = Math.max(0, 3600 - seconds);
   const min = Math.floor(totalSecondsBeforeMidnight / 60);
   const sec = totalSecondsBeforeMidnight % 60;
