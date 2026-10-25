@@ -975,6 +975,13 @@ function initSituationDispatchTool() {
   });
 }
 
+// Export for Node.js testing environment (without breaking browser usage)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    projectLatLon
+  };
+}
+
 // ============================================================================
 // MODULE 10: STRATEGIC BALLISTIC MISSILE FLIGHT WINDOW CALCULATOR
 // ============================================================================
