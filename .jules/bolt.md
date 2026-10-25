@@ -1,0 +1,3 @@
+## 2024-05-15 - [Batch DOM insertions with DocumentFragment]
+**Learning:** Found a common performance anti-pattern across `app.js` and `features.js` where DOM elements were being directly appended to live containers (like `ticksGroup`, `svg`, `grid`) repeatedly inside loops (e.g. `for` and `forEach` loops for map markers, timeline cards, clock ticks, and chart points). This triggers excessive reflows and repaints, especially with SVGs and large lists, degrading rendering performance.
+**Action:** Always initialize a `DocumentFragment` before a loop, append all newly created elements to the fragment within the loop, and then append the fragment to the live DOM node once at the end. This batches the layout updates into a single operation.
