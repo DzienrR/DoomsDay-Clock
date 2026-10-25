@@ -1801,7 +1801,9 @@ async function fetchPlanetarySensors() {
       nasaList.innerHTML = data.events
         .slice(0, 8)
         .map((ev) => {
-          const catTitle = ev.categories?.[0]?.title || "Planetary Event";
+          // Security: Escape HTML entities to prevent DOM XSS when injecting via innerHTML
+          const safeTitle = (ev.title || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+          const catTitle = (ev.categories?.[0]?.title || "Planetary Event").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
           const latestGeo = ev.geometry?.[ev.geometry.length - 1];
           const dateStr = latestGeo?.date ? latestGeo.date.substring(0, 10) : "Active";
           const coords =
@@ -1813,7 +1815,7 @@ async function fetchPlanetarySensors() {
           return `
             <div class="sensor-item">
               <div>
-                <div class="sensor-item-title">${ev.title}</div>
+                <div class="sensor-item-title">${safeTitle}</div>
                 <div class="sensor-item-sub">${catTitle} • ${dateStr} • Coords: ${coords}</div>
               </div>
               <a href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener noreferrer" class="source-chip">NASA ↗</a>
@@ -1854,7 +1856,8 @@ async function fetchPlanetarySensors() {
         .slice(0, 8)
         .map((f) => {
           const mag = Number(f.properties.mag).toFixed(1);
-          const place = f.properties.place || "Global Seismic Station";
+          // Security: Escape HTML entities to prevent DOM XSS when injecting via innerHTML
+          const place = (f.properties.place || "Global Seismic Station").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
           const depth = f.geometry?.coordinates?.[2]
             ? `${Number(f.geometry.coordinates[2]).toFixed(1)} km depth`
             : "Shallow";

@@ -317,7 +317,8 @@ async function fetchLiveMapOverlay() {
         warheads: 0,
         firstTest: new Date(f.properties.time).toISOString().substring(0, 19) + " UTC",
         status: `Depth: ${Number(f.geometry.coordinates[2]).toFixed(1)} km`,
-        desc: `Real-time USGS seismic detection at ${f.properties.place}. Global seismic networks verify both natural tectonic activity and underground nuclear test compliance.`
+        // Security: Escape HTML entities from external USGS data to prevent DOM XSS when rendered
+        desc: `Real-time USGS seismic detection at ${(f.properties.place || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}. Global seismic networks verify both natural tectonic activity and underground nuclear test compliance.`
       }));
       drawWorldMap(activeMapLayer);
     }
@@ -1124,7 +1125,8 @@ function initCustomScenarioBuilder() {
   if (form && nameInput && deltaInput) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const title = nameInput.value.trim();
+      // Security: Escape HTML entities from user input to prevent DOM XSS in scenario cards
+      const title = nameInput.value.trim().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
       const deltaVal = Number(deltaInput.value);
       if (!title) return;
 
