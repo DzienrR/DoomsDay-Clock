@@ -14,6 +14,15 @@ const SOURCES = {
   ALJAZEERA_2026: "https://www.aljazeera.com/news/2026/1/28/symbolic-doomsday-clock-moves-closer-to-midnight-amid-catastrophic-risks"
 };
 
+const USGS_ENDPOINT = [
+  "https://earthquake.usgs.gov",
+  "earthquakes",
+  "feed",
+  "v1.0",
+  "summary",
+  "4.5_day.geojson"
+].join("/");
+
 // All 27 Official Settings of the Doomsday Clock (1947–2026)
 const TIMELINE_DATA = [
   {
@@ -1840,15 +1849,7 @@ async function fetchPlanetarySensors() {
 
   // 9B. USGS Real-Time M4.5+ Earthquakes (24-Hour Feed)
   try {
-    const usgsEndpoint = [
-      "https://earthquake.usgs.gov",
-      "earthquakes",
-      "feed",
-      "v1.0",
-      "summary",
-      "4.5_day.geojson"
-    ].join("/");
-    const res = await fetch(usgsEndpoint);
+    const res = await fetch(USGS_ENDPOINT);
     if (!res.ok) throw new Error("USGS feed error");
     const data = await res.json();
     if (usgsList && Array.isArray(data.features) && data.features.length > 0) {

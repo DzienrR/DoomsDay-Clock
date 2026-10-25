@@ -296,15 +296,7 @@ function initWorldThreatMap() {
 
 async function fetchLiveMapOverlay() {
   try {
-    const usgsEndpoint = [
-      "https://earthquake.usgs.gov",
-      "earthquakes",
-      "feed",
-      "v1.0",
-      "summary",
-      "4.5_day.geojson"
-    ].join("/");
-    const res = await fetch(usgsEndpoint);
+    const res = await fetch(USGS_ENDPOINT);
     if (!res.ok) return;
     const data = await res.json();
     if (Array.isArray(data.features)) {
