@@ -1,38 +1,35 @@
-# THE DOOMSDAY CLOCK — Live Global Threat & History Observatory
+# THE DOOMSDAY CLOCK — Live Global Threat & History Observatory (v3.0)
 
-An interactive, zero-dependency web application displaying the official **2026 Doomsday Clock reading (85 Seconds to Midnight)** alongside live global intelligence streams, planetary telemetry, a complete 1947–2026 time-travel timeline, and an interactive policy & crisis simulator.
+An interactive, zero-dependency, 6-page web observatory displaying the official **2026 Doomsday Clock reading (85 Seconds to Midnight)** with automatic live official-reading synchronization, real-time global intelligence streams, NASA EONET & USGS planetary telemetry, an interactive global threat map, a 1947–2026 time-travel archive, and policy/climate simulators.
 
-## Key Features Built for Deep Exploration
+## 1. Multi-Page Observatory Map
 
-1. **Interactive SVG Doomsday Clock & Time-Travel Engine (`index.html`, `app.js`)**
-   - Displays the official January 27, 2026 setting of **85 seconds to midnight (`23:58:35`)** set by the Bulletin of the Atomic Scientists.
-   - **Dual View Modes**: Switch between the **Full 12-Hour Tactical Dial** and **Martyl Langsdorf's Iconic 1947 Upper-Left Quadrant View**.
-   - **Time-Travel Scrubber & Auto-Playback**: Scrub through or animate all **27 official historical settings (1947–2026)** and watch the clock hands, danger arc, rank badge, and historical statement update in real time.
-   - **Web Audio Geiger/Clock Pulse**: Optional synthesized audio pulse (via the browser's native Web Audio API) that accelerates as the Clock moves closer to midnight.
+| Page File | Role & Interactive Modules |
+| :--- | :--- |
+| `index.html` | **Main Command Hub:** Interactive SVG Clock (Full Dial & 1947 Quadrant views), Live Official Sync, Time-Travel Scrubber, Audio Pulse, Portal Hub, and All-in-One Dashboard. |
+| `intelligence.html` | **Live Intelligence & Planetary Sensors:** Real-time threat stream, custom keyword search, Stream Tension Index, NASA EONET v3 natural hazards, and USGS M4.5+ seismic monitor. |
+| `map.html` | **Geospatial Threat Map & Arsenals:** Interactive SVG world map tracking the 9 nuclear-armed states, 2026 flashpoints, live seismic epicenters, and the Treaty Tracker Matrix. |
+| `simulator.html` | **Simulation Laboratories:** 12-lever Policy & Crisis Simulator (with ghost hand projection) and the City Impact Visualizer (1983 TTAPS Nuclear Winter vs. Warming with live Open-Meteo weather). |
+| `timeline.html` | **1947–2026 Historical Archive & Birth Machine:** Interactive SVG trajectory graph, all 27/28 historical adjustment cards, and the "When Were You Born?" Doomsday Time Machine. |
+| `about.html` | **Strategic Dossiers & Methodology:** Deep-dive dossiers on Nuclear, Climate, AI, and Biosecurity pillars, cultural history, and verified bibliography. |
 
-2. **Live World News & Global Conflict Intelligence Stream**
-   - **Google News Live RSS Integration**: Pulls live global articles across five Doomsday Clock pillars (*Nuclear & Security*, *Climate & Earth*, *AI & Cyber*, *Biosecurity*, and *Diplomacy & Treaties*) plus a custom live search bar.
-   - **GDELT Project v2 Open API**: Queries real-time global media coverage and computes a live **Stream Tension Index**.
-   - **Resilient Curated Archive**: Automatically merges and falls back to verified 2026 reporting if a visitor is offline.
+## 2. World-Class Engineering & Governance Documentation
 
-3. **Live Open-Source Planetary Sensors**
-   - **NASA EONET v3 API**: Real-time satellite tracking of active wildfires, severe storms, volcanic activity, and sea/lake ice anomalies.
-   - **USGS Real-Time Seismic Feed (GeoJSON API)**: Live global M4.5+ seismic events over the past 24 hours, flagging shallow seismic events.
+This project includes a complete pre-development and post-deployment engineering governance suite:
 
-4. **Complete 1947–2026 Interactive Trajectory Chart & Timeline**
-   - Interactive SVG trajectory graph plotting distance to midnight from 1947 (7 minutes) to 1991 (17 minutes, safest on record) to 2026 (85 seconds, closest ever).
-   - Filterable cards for all 27 adjustments (*Moved Closer*, *Moved Back*, *Seconds Era*).
+- **`REQUIREMENTS.md`** — Product Requirements Document (PRD), user personas, functional specs, and non-functional SLAs.
+- **`ARCHITECTURE.md`** — System architecture, defensive multi-page DOM hydration, live API fallback matrix, and SVG mathematical models.
+- **`DESIGN_SYSTEM.md`** — CSS custom property tokens, typography scale, status badge semantics, and accessibility rules.
+- **`AGENTS.md` & `RULES.md`** — Mandatory rules for AI coding agents and human developers (cross-page navigation sync, data groundedness, defensive DOM guards).
+- **`CONTRIBUTING.md`** — Step-by-step developer guide for adding new annual Clock settings, simulator levers, or cities.
+- **`OPERATIONS_RUNBOOK.md`** — Pre-launch QA checklist, annual January Bulletin update protocol, and 1-step deployment guides.
+- **`SECURITY.md` & `CHANGELOG.md`** — Zero-credential API policy, XSS sanitization rules, and release history.
+- **`.skills/doomsday-site-manager/SKILL.md`** — Dedicated AI skill for managing, auditing, and updating the observatory.
 
-5. **"What Moves the Clock?" Policy & Crisis Simulator**
-   - Interactive sandbox where visitors toggle 12 diplomatic breakthroughs (e.g., *New START successor treaty*, *Global ban on autonomous AI weapons*, *Methane & coal phase-down*) or escalation scenarios to project a simulated blue ghost hand directly on the main clock face.
+## 3. Running Locally & Deploying Globally
 
-## Running Locally & Deploying Globally
-
-- **Open Directly**: Double-click `index.html` in Finder or open it in any modern browser.
-- **Local Web Server**:
-  ```bash
-  cd "/Users/dzienrr/Documents/ChatGPT/DoomsDay Clock"
-  python3 -m http.server 8080
-  ```
-  Then visit `http://localhost:8080`.
-- **Global Deployment**: Since this project uses pure HTML5, CSS3, and vanilla ES6+ JavaScript with keyless CORS-friendly open APIs, you can deploy the `/Users/dzienrr/Documents/ChatGPT/DoomsDay Clock` folder directly to **GitHub Pages**, **Vercel**, **Netlify**, or **Cloudflare Pages** with zero build configuration.
+```bash
+cd "/Users/dzienrr/Documents/ChatGPT/DoomsDay Project/DoomsDay Clock"
+python3 -m http.server 8080
+```
+Then open `http://localhost:8080/index.html` in your browser, or deploy the folder directly to **GitHub Pages**, **Vercel**, **Netlify**, or **Cloudflare Pages**.

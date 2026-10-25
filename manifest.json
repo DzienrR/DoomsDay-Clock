@@ -1,0 +1,10 @@
+{
+  "name": "Doomsday Clock — Live Global Threat & History Observatory",
+  "short_name": "Doomsday Clock",
+  "description": "Interactive 2026 Doomsday Clock (85 Seconds to Midnight) with live global news, NASA EONET & USGS planetary telemetry, 1947–2026 time-travel archive, and policy simulator.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#07090e",
+  "theme_color": "#ff3b30",
+  "orientation": "any"
+}
