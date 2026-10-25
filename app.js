@@ -2110,3 +2110,14 @@ function bindEventListeners() {
     syncOfficialClockReading(true);
   });
 }
+
+// Export pure functions for testing
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    format24HourTime,
+    buildOfficialTimelineEntry,
+    classifyArticleCategory,
+    computeArticleImpact,
+    parseWikipediaLeadExtract
+  };
+}
