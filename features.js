@@ -331,6 +331,8 @@ function drawWorldMap(layerFilter) {
   if (!svg) return;
   svg.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
   // Graticule grid
   for (let lon = -150; lon <= 150; lon += 30) {
     const { x } = projectLatLon(0, lon);
@@ -340,7 +342,7 @@ function drawWorldMap(layerFilter) {
     line.setAttribute("x2", x.toFixed(1));
     line.setAttribute("y2", "500");
     line.setAttribute("stroke", "rgba(255,255,255,0.04)");
-    svg.appendChild(line);
+    fragment.appendChild(line);
   }
   for (let lat = -60; lat <= 60; lat += 30) {
     const { y } = projectLatLon(lat, 0);
@@ -350,7 +352,7 @@ function drawWorldMap(layerFilter) {
     line.setAttribute("x2", "1000");
     line.setAttribute("y2", y.toFixed(1));
     line.setAttribute("stroke", lat === 0 ? "rgba(56,189,248,0.14)" : "rgba(255,255,255,0.04)");
-    svg.appendChild(line);
+    fragment.appendChild(line);
   }
 
   // Stylized Continent Polygons (Tactical Command Projection)
@@ -375,7 +377,7 @@ function drawWorldMap(layerFilter) {
     path.setAttribute("fill", "rgba(30, 41, 59, 0.55)");
     path.setAttribute("stroke", "rgba(148, 163, 184, 0.22)");
     path.setAttribute("stroke-width", "1.5");
-    svg.appendChild(path);
+    fragment.appendChild(path);
   });
 
   const allNodes = [...GEO_NODES, ...liveMapMarkers].filter((n) =>
@@ -423,8 +425,10 @@ function drawWorldMap(layerFilter) {
     }
 
     g.addEventListener("click", () => inspectMapNode(node));
-    svg.appendChild(g);
+    fragment.appendChild(g);
   });
+
+  svg.appendChild(fragment);
 }
 
 function inspectMapNode(node) {
