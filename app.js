@@ -14,6 +14,15 @@ const SOURCES = {
   ALJAZEERA_2026: "https://www.aljazeera.com/news/2026/1/28/symbolic-doomsday-clock-moves-closer-to-midnight-amid-catastrophic-risks"
 };
 
+const USGS_ENDPOINT = [
+  "https://earthquake.usgs.gov",
+  "earthquakes",
+  "feed",
+  "v1.0",
+  "summary",
+  "4.5_day.geojson"
+].join("/");
+
 // All 27 Official Settings of the Doomsday Clock (1947–2026)
 const TIMELINE_DATA = [
   {
@@ -774,6 +783,7 @@ function loadCachedOfficialReading() {
 
 // Convert seconds to 24h clock string (e.g. 85s -> "23:58:35")
 function format24HourTime(seconds) {
+  if (seconds === 0) return "00:00:00";
   const totalSecondsBeforeMidnight = Math.max(0, 3600 - seconds);
   const min = Math.floor(totalSecondsBeforeMidnight / 60);
   const sec = totalSecondsBeforeMidnight % 60;
@@ -1164,6 +1174,7 @@ function drawClockDialTicks() {
   const cx = 210;
   const cy = 210;
   const outerR = 166;
+  const fragment = document.createDocumentFragment();
 
   for (let i = 0; i < 60; i++) {
     const angleDeg = i * 6;
@@ -1187,7 +1198,7 @@ function drawClockDialTicks() {
       i === 0 ? "#ff3b30" : isFinal17Mins ? "rgba(255, 149, 0, 0.75)" : "rgba(148, 163, 184, 0.35)"
     );
     line.setAttribute("stroke-width", isHour ? "2.5" : "1.2");
-    ticksGroup.appendChild(line);
+    fragment.appendChild(line);
 
     if (isHour && i > 0) {
       const hourNum = i / 5;
@@ -1200,9 +1211,11 @@ function drawClockDialTicks() {
       text.setAttribute("text-anchor", "middle");
       text.setAttribute("class", "clock-tick-label");
       text.textContent = String(hourNum);
-      ticksGroup.appendChild(text);
+      fragment.appendChild(text);
     }
   }
+
+  ticksGroup.appendChild(fragment);
 }
 
 // Helper: Convert Seconds-Before-Midnight to SVG Angle & Arc Path
@@ -1396,6 +1409,8 @@ function renderHistoryChart() {
   if (!svg) return;
   svg.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
   const width = 1000;
   const height = 300;
   const padLeft = 48;
@@ -1424,7 +1439,7 @@ function renderHistoryChart() {
     line.setAttribute("y2", y.toFixed(1));
     line.setAttribute("stroke", m <= 2 ? "rgba(255, 59, 48, 0.35)" : "rgba(255, 255, 255, 0.07)");
     line.setAttribute("stroke-dasharray", m <= 2 ? "4 4" : "none");
-    svg.appendChild(line);
+    fragment.appendChild(line);
 
     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
     label.setAttribute("x", String(padLeft - 8));
@@ -1434,7 +1449,7 @@ function renderHistoryChart() {
     label.setAttribute("font-size", "11");
     label.setAttribute("font-family", "JetBrains Mono, monospace");
     label.textContent = `${m}m`;
-    svg.appendChild(label);
+    fragment.appendChild(label);
   });
 
   const points = TIMELINE_DATA.map((d) => `${getX(d.year).toFixed(1)},${getY(d.seconds).toFixed(1)}`);
@@ -1447,14 +1462,14 @@ function renderHistoryChart() {
   const area = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
   area.setAttribute("points", areaPoints);
   area.setAttribute("fill", "rgba(255, 59, 48, 0.12)");
-  svg.appendChild(area);
+  fragment.appendChild(area);
 
   const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
   polyline.setAttribute("points", points.join(" "));
   polyline.setAttribute("fill", "none");
   polyline.setAttribute("stroke", "#ff3b30");
   polyline.setAttribute("stroke-width", "2.8");
-  svg.appendChild(polyline);
+  fragment.appendChild(polyline);
 
   const readout = document.getElementById("chart-hover-readout");
   TIMELINE_DATA.forEach((d, idx) => {
@@ -1483,7 +1498,7 @@ function renderHistoryChart() {
       document.getElementById("clock-hero")?.scrollIntoView({ behavior: "smooth" });
     });
 
-    svg.appendChild(circle);
+    fragment.appendChild(circle);
 
     const isLatestNode = idx === TIMELINE_DATA.length - 1;
     if ([1947, 1953, 1963, 1972, 1984, 1991, 2007, 2018].includes(d.year) || isLatestNode) {
@@ -1496,9 +1511,11 @@ function renderHistoryChart() {
       yText.setAttribute("font-weight", isLatestNode ? "bold" : "normal");
       yText.setAttribute("font-family", "JetBrains Mono, monospace");
       yText.textContent = String(d.year);
-      svg.appendChild(yText);
+      fragment.appendChild(yText);
     }
   });
+
+  svg.appendChild(fragment);
 }
 
 // 6. Render Filterable Historical Timeline Cards
@@ -1506,6 +1523,8 @@ function renderTimelineCards(filter = "all", searchQuery = "") {
   const grid = document.getElementById("timeline-cards-grid");
   if (!grid) return;
   grid.innerHTML = "";
+
+  const fragment = document.createDocumentFragment();
 
   const query = (searchQuery || "").trim().toLowerCase();
 
@@ -1565,8 +1584,10 @@ function renderTimelineCards(filter = "all", searchQuery = "") {
       document.getElementById("clock-hero")?.scrollIntoView({ behavior: "smooth" });
     });
 
-    grid.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  grid.appendChild(fragment);
 }
 
 // 7. Render 4 Core Pillar Dossiers & Culture Section
@@ -1801,7 +1822,9 @@ async function fetchPlanetarySensors() {
       nasaList.innerHTML = data.events
         .slice(0, 8)
         .map((ev) => {
-          const catTitle = ev.categories?.[0]?.title || "Planetary Event";
+          // Security: Escape HTML entities to prevent DOM XSS when injecting via innerHTML
+          const safeTitle = (ev.title || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+          const catTitle = (ev.categories?.[0]?.title || "Planetary Event").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
           const latestGeo = ev.geometry?.[ev.geometry.length - 1];
           const dateStr = latestGeo?.date ? latestGeo.date.substring(0, 10) : "Active";
           const coords =
@@ -1813,7 +1836,7 @@ async function fetchPlanetarySensors() {
           return `
             <div class="sensor-item">
               <div>
-                <div class="sensor-item-title">${ev.title}</div>
+                <div class="sensor-item-title">${safeTitle}</div>
                 <div class="sensor-item-sub">${catTitle} • ${dateStr} • Coords: ${coords}</div>
               </div>
               <a href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener noreferrer" class="source-chip">NASA ↗</a>
@@ -1838,15 +1861,7 @@ async function fetchPlanetarySensors() {
 
   // 9B. USGS Real-Time M4.5+ Earthquakes (24-Hour Feed)
   try {
-    const usgsEndpoint = [
-      "https://earthquake.usgs.gov",
-      "earthquakes",
-      "feed",
-      "v1.0",
-      "summary",
-      "4.5_day.geojson"
-    ].join("/");
-    const res = await fetch(usgsEndpoint);
+    const res = await fetch(USGS_ENDPOINT);
     if (!res.ok) throw new Error("USGS feed error");
     const data = await res.json();
     if (usgsList && Array.isArray(data.features) && data.features.length > 0) {
@@ -1854,7 +1869,8 @@ async function fetchPlanetarySensors() {
         .slice(0, 8)
         .map((f) => {
           const mag = Number(f.properties.mag).toFixed(1);
-          const place = f.properties.place || "Global Seismic Station";
+          // Security: Escape HTML entities to prevent DOM XSS when injecting via innerHTML
+          const place = (f.properties.place || "Global Seismic Station").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
           const depth = f.geometry?.coordinates?.[2]
             ? `${Number(f.geometry.coordinates[2]).toFixed(1)} km depth`
             : "Shallow";
@@ -1991,7 +2007,7 @@ function stopHistoryPlayback() {
   }
 }
 
-function bindEventListeners() {
+function bindTimelineEvents() {
   const scrubber = document.getElementById("year-scrubber");
   if (scrubber) {
     scrubber.addEventListener("input", (e) => {
@@ -2029,6 +2045,17 @@ function bindEventListeners() {
     });
   }
 
+  document.querySelectorAll(".tl-filter-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tl-filter-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const searchInput = document.getElementById("timeline-search-input");
+      renderTimelineCards(btn.dataset.tlFilter || "all", searchInput ? searchInput.value : "");
+    });
+  });
+}
+
+function bindClockEvents() {
   const fullBtn = document.getElementById("view-full-btn");
   const quadBtn = document.getElementById("view-quadrant-btn");
   const svg = document.getElementById("doomsday-svg");
@@ -2051,6 +2078,12 @@ function bindEventListeners() {
     soundBtn.addEventListener("click", toggleSoundPulse);
   }
 
+  document.getElementById("sync-clock-btn")?.addEventListener("click", () => {
+    syncOfficialClockReading(true);
+  });
+}
+
+function bindIntelligenceEvents() {
   document.querySelectorAll(".filter-pill").forEach((pill) => {
     pill.addEventListener("click", () => {
       document.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
@@ -2086,27 +2119,27 @@ function bindEventListeners() {
   document.getElementById("refresh-feed-btn")?.addEventListener("click", () => {
     fetchLiveIntelligence(activeNewsCategory, false);
   });
+}
+
+function bindSensorEvents() {
   document.getElementById("refresh-sensors-btn")?.addEventListener("click", () => {
     fetchPlanetarySensors();
   });
+}
 
-  document.querySelectorAll(".tl-filter-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tl-filter-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      const searchInput = document.getElementById("timeline-search-input");
-      renderTimelineCards(btn.dataset.tlFilter || "all", searchInput ? searchInput.value : "");
-    });
-  });
-
+function bindSimulatorEvents() {
   document.getElementById("sim-reset-btn")?.addEventListener("click", () => {
     document.querySelectorAll(".sim-checkbox").forEach((cb) => {
       cb.checked = false;
     });
     updateSimulatorCalculation();
   });
+}
 
-  document.getElementById("sync-clock-btn")?.addEventListener("click", () => {
-    syncOfficialClockReading(true);
-  });
+function bindEventListeners() {
+  bindTimelineEvents();
+  bindClockEvents();
+  bindIntelligenceEvents();
+  bindSensorEvents();
+  bindSimulatorEvents();
 }

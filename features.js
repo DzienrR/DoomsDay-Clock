@@ -296,15 +296,7 @@ function initWorldThreatMap() {
 
 async function fetchLiveMapOverlay() {
   try {
-    const usgsEndpoint = [
-      "https://earthquake.usgs.gov",
-      "earthquakes",
-      "feed",
-      "v1.0",
-      "summary",
-      "4.5_day.geojson"
-    ].join("/");
-    const res = await fetch(usgsEndpoint);
+    const res = await fetch(USGS_ENDPOINT);
     if (!res.ok) return;
     const data = await res.json();
     if (Array.isArray(data.features)) {
@@ -317,7 +309,8 @@ async function fetchLiveMapOverlay() {
         warheads: 0,
         firstTest: new Date(f.properties.time).toISOString().substring(0, 19) + " UTC",
         status: `Depth: ${Number(f.geometry.coordinates[2]).toFixed(1)} km`,
-        desc: `Real-time USGS seismic detection at ${f.properties.place}. Global seismic networks verify both natural tectonic activity and underground nuclear test compliance.`
+        // Security: Escape HTML entities from external USGS data to prevent DOM XSS when rendered
+        desc: `Real-time USGS seismic detection at ${(f.properties.place || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}. Global seismic networks verify both natural tectonic activity and underground nuclear test compliance.`
       }));
       drawWorldMap(activeMapLayer);
     }
@@ -331,6 +324,8 @@ function drawWorldMap(layerFilter) {
   if (!svg) return;
   svg.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
   // Graticule grid
   for (let lon = -150; lon <= 150; lon += 30) {
     const { x } = projectLatLon(0, lon);
@@ -340,7 +335,7 @@ function drawWorldMap(layerFilter) {
     line.setAttribute("x2", x.toFixed(1));
     line.setAttribute("y2", "500");
     line.setAttribute("stroke", "rgba(255,255,255,0.04)");
-    svg.appendChild(line);
+    fragment.appendChild(line);
   }
   for (let lat = -60; lat <= 60; lat += 30) {
     const { y } = projectLatLon(lat, 0);
@@ -350,7 +345,7 @@ function drawWorldMap(layerFilter) {
     line.setAttribute("x2", "1000");
     line.setAttribute("y2", y.toFixed(1));
     line.setAttribute("stroke", lat === 0 ? "rgba(56,189,248,0.14)" : "rgba(255,255,255,0.04)");
-    svg.appendChild(line);
+    fragment.appendChild(line);
   }
 
   // Stylized Continent Polygons (Tactical Command Projection)
@@ -375,7 +370,7 @@ function drawWorldMap(layerFilter) {
     path.setAttribute("fill", "rgba(30, 41, 59, 0.55)");
     path.setAttribute("stroke", "rgba(148, 163, 184, 0.22)");
     path.setAttribute("stroke-width", "1.5");
-    svg.appendChild(path);
+    fragment.appendChild(path);
   });
 
   const allNodes = [...GEO_NODES, ...liveMapMarkers].filter((n) =>
@@ -423,8 +418,10 @@ function drawWorldMap(layerFilter) {
     }
 
     g.addEventListener("click", () => inspectMapNode(node));
-    svg.appendChild(g);
+    fragment.appendChild(g);
   });
+
+  svg.appendChild(fragment);
 }
 
 function inspectMapNode(node) {
@@ -969,10 +966,40 @@ function initSituationDispatchTool() {
           btn.style.background = "";
         }, 2500);
       }).catch(() => {
-        alert("Dispatch generated! Please copy from the preview box below.");
+        const origText = btn.innerHTML;
+        btn.innerHTML = "⚠ Please copy from preview below";
+        btn.style.background = "#ff9500";
+        setTimeout(() => {
+          btn.innerHTML = origText;
+          btn.style.background = "";
+        }, 2500);
       });
     }
   });
+}
+
+function toRad(deg) {
+  return (deg * Math.PI) / 180;
+}
+
+function computeGreatCircleDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// Export for Node.js testing environment (without breaking browser usage)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    projectLatLon,
+    toRad,
+    computeGreatCircleDistance
+  };
 }
 
 // ============================================================================
@@ -1006,21 +1033,6 @@ function initBallisticCalculator() {
     "paris": { lat: 48.86, lon: 2.35, name: "Paris" },
     "tokyo": { lat: 35.68, lon: 139.69, name: "Tokyo" }
   };
-
-  function toRad(deg) {
-    return (deg * Math.PI) / 180;
-  }
-
-  function computeGreatCircleDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // km
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
 
   function updateFlightCalculations() {
     const orig = origins[originSelect.value] || origins["usa-minot"];
@@ -1118,7 +1130,8 @@ function initCustomScenarioBuilder() {
   if (form && nameInput && deltaInput) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const title = nameInput.value.trim();
+      // Security: Escape HTML entities from user input to prevent DOM XSS in scenario cards
+      const title = nameInput.value.trim().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
       const deltaVal = Number(deltaInput.value);
       if (!title) return;
 
@@ -1128,9 +1141,23 @@ function initCustomScenarioBuilder() {
       const chip = document.createElement("div");
       chip.className = "preset-chip";
       chip.style.borderColor = badgeColor;
-      chip.innerHTML = `<strong>${title}</strong> (${sign}) <span style="margin-left:6px; cursor:pointer;" title="Remove">✕</span>`;
 
-      chip.querySelector("span").addEventListener("click", () => {
+      const strongEl = document.createElement("strong");
+      strongEl.textContent = title;
+
+      const textNode = document.createTextNode(` (${sign}) `);
+
+      const closeSpan = document.createElement("span");
+      closeSpan.style.marginLeft = "6px";
+      closeSpan.style.cursor = "pointer";
+      closeSpan.title = "Remove";
+      closeSpan.textContent = "✕";
+
+      chip.appendChild(strongEl);
+      chip.appendChild(textNode);
+      chip.appendChild(closeSpan);
+
+      closeSpan.addEventListener("click", () => {
         chip.remove();
         if (typeof updateSimulatorCalculation === "function") updateSimulatorCalculation();
       });
