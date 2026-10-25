@@ -1,64 +1,87 @@
+// Mock global variables used in app.js
+global.window = {};
+global.document = {
+  addEventListener: () => {},
+  getElementById: () => ({
+    textContent: '',
+    innerHTML: '',
+    style: {},
+    appendChild: () => {},
+    setAttribute: () => {},
+    classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+    dataset: {},
+    addEventListener: () => {}
+  }),
+  querySelectorAll: () => []
+};
+global.localStorage = {
+  getItem: () => null,
+  setItem: () => {}
+};
+
+const { test } = require('node:test');
+const assert = require('node:assert');
 const {
   format24HourTime,
   classifyArticleCategory,
   computeArticleImpact
-} = require('./app');
+} = require('./app.js');
 
-describe('format24HourTime', () => {
-  it('converts 85 seconds to 23:58:35', () => {
-    expect(format24HourTime(85)).toBe('23:58:35');
+test('format24HourTime', async (t) => {
+  await t.test('converts 85 seconds to 23:58:35', () => {
+    assert.strictEqual(format24HourTime(85), '23:58:35');
   });
 
-  it('converts 120 seconds to 23:58:00', () => {
-    expect(format24HourTime(120)).toBe('23:58:00');
+  await t.test('converts 120 seconds to 23:58:00', () => {
+    assert.strictEqual(format24HourTime(120), '23:58:00');
   });
 
-  it('converts 0 seconds to 23:60:00 (midnight)', () => {
-    expect(format24HourTime(0)).toBe('23:60:00');
-  });
-});
-
-describe('classifyArticleCategory', () => {
-  it('classifies diplomacy keywords', () => {
-    expect(classifyArticleCategory('new peace treaty signed')).toBe('diplomacy');
-  });
-
-  it('classifies biosecurity keywords', () => {
-    expect(classifyArticleCategory('virus outbreak reported')).toBe('bio');
-  });
-
-  it('classifies AI keywords', () => {
-    expect(classifyArticleCategory('new artificial intelligence model')).toBe('ai');
-  });
-
-  it('classifies climate keywords', () => {
-    expect(classifyArticleCategory('global warming emissions')).toBe('climate');
-  });
-
-  it('defaults to nuclear', () => {
-    expect(classifyArticleCategory('unknown topic')).toBe('nuclear');
+  await t.test('converts 0 seconds to 23:60:00 (midnight)', () => {
+    assert.strictEqual(format24HourTime(0), '23:60:00');
   });
 });
 
-describe('computeArticleImpact', () => {
-  it('handles diplomacy category', () => {
-    expect(computeArticleImpact('some text', 'diplomacy')).toEqual({
+test('classifyArticleCategory', async (t) => {
+  await t.test('classifies diplomacy keywords', () => {
+    assert.strictEqual(classifyArticleCategory('new peace treaty signed'), 'diplomacy');
+  });
+
+  await t.test('classifies biosecurity keywords', () => {
+    assert.strictEqual(classifyArticleCategory('virus outbreak reported'), 'bio');
+  });
+
+  await t.test('classifies AI keywords', () => {
+    assert.strictEqual(classifyArticleCategory('new artificial intelligence model'), 'ai');
+  });
+
+  await t.test('classifies climate keywords', () => {
+    assert.strictEqual(classifyArticleCategory('global warming emissions'), 'climate');
+  });
+
+  await t.test('defaults to nuclear', () => {
+    assert.strictEqual(classifyArticleCategory('unknown topic'), 'nuclear');
+  });
+});
+
+test('computeArticleImpact', async (t) => {
+  await t.test('handles diplomacy category', () => {
+    assert.deepStrictEqual(computeArticleImpact('some text', 'diplomacy'), {
       label: 'Stabilizing Signal',
       type: 'stabilizing',
       tension: 35
     });
   });
 
-  it('handles high risk keywords', () => {
-    expect(computeArticleImpact('missile test escalation', 'nuclear')).toEqual({
+  await t.test('handles high risk keywords', () => {
+    assert.deepStrictEqual(computeArticleImpact('missile test escalation', 'nuclear'), {
       label: 'High Clock Pressure',
       type: 'risk',
       tension: 92
     });
   });
 
-  it('handles default risk', () => {
-    expect(computeArticleImpact('normal text', 'nuclear')).toEqual({
+  await t.test('handles default risk', () => {
+    assert.deepStrictEqual(computeArticleImpact('normal text', 'nuclear'), {
       label: 'Elevated Watch',
       type: 'risk',
       tension: 78
