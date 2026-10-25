@@ -969,7 +969,13 @@ function initSituationDispatchTool() {
           btn.style.background = "";
         }, 2500);
       }).catch(() => {
-        alert("Dispatch generated! Please copy from the preview box below.");
+        const origText = btn.innerHTML;
+        btn.innerHTML = "⚠ Please copy from preview below";
+        btn.style.background = "#ff9500";
+        setTimeout(() => {
+          btn.innerHTML = origText;
+          btn.style.background = "";
+        }, 2500);
       });
     }
   });
