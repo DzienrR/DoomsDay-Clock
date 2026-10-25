@@ -1991,7 +1991,7 @@ function stopHistoryPlayback() {
   }
 }
 
-function bindEventListeners() {
+function bindTimelineEvents() {
   const scrubber = document.getElementById("year-scrubber");
   if (scrubber) {
     scrubber.addEventListener("input", (e) => {
@@ -2029,6 +2029,17 @@ function bindEventListeners() {
     });
   }
 
+  document.querySelectorAll(".tl-filter-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tl-filter-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const searchInput = document.getElementById("timeline-search-input");
+      renderTimelineCards(btn.dataset.tlFilter || "all", searchInput ? searchInput.value : "");
+    });
+  });
+}
+
+function bindClockEvents() {
   const fullBtn = document.getElementById("view-full-btn");
   const quadBtn = document.getElementById("view-quadrant-btn");
   const svg = document.getElementById("doomsday-svg");
@@ -2051,6 +2062,12 @@ function bindEventListeners() {
     soundBtn.addEventListener("click", toggleSoundPulse);
   }
 
+  document.getElementById("sync-clock-btn")?.addEventListener("click", () => {
+    syncOfficialClockReading(true);
+  });
+}
+
+function bindIntelligenceEvents() {
   document.querySelectorAll(".filter-pill").forEach((pill) => {
     pill.addEventListener("click", () => {
       document.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
@@ -2086,27 +2103,27 @@ function bindEventListeners() {
   document.getElementById("refresh-feed-btn")?.addEventListener("click", () => {
     fetchLiveIntelligence(activeNewsCategory, false);
   });
+}
+
+function bindSensorEvents() {
   document.getElementById("refresh-sensors-btn")?.addEventListener("click", () => {
     fetchPlanetarySensors();
   });
+}
 
-  document.querySelectorAll(".tl-filter-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tl-filter-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      const searchInput = document.getElementById("timeline-search-input");
-      renderTimelineCards(btn.dataset.tlFilter || "all", searchInput ? searchInput.value : "");
-    });
-  });
-
+function bindSimulatorEvents() {
   document.getElementById("sim-reset-btn")?.addEventListener("click", () => {
     document.querySelectorAll(".sim-checkbox").forEach((cb) => {
       cb.checked = false;
     });
     updateSimulatorCalculation();
   });
+}
 
-  document.getElementById("sync-clock-btn")?.addEventListener("click", () => {
-    syncOfficialClockReading(true);
-  });
+function bindEventListeners() {
+  bindTimelineEvents();
+  bindClockEvents();
+  bindIntelligenceEvents();
+  bindSensorEvents();
+  bindSimulatorEvents();
 }
