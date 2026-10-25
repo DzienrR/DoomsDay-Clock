@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Threat Map &amp; Nuclear Arsenals | The Doomsday Clock Observatory</title>
+  <meta name="description" content="Interactive geospatial intelligence map plotting nuclear weapon arsenals, 2026 geopolitical flashpoints, live USGS seismic events, and ballistic missile trajectory windows." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top Live Telemetry Bar -->
+  <div class="telemetry-bar" role="region" aria-label="Live Global Telemetry">
+    <div class="telemetry-left">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="telemetry-label">OBSERVATORY STATUS: <strong>LIVE</strong></span>
+      <span class="telemetry-divider">|</span>
+      <span id="utc-clock" class="mono">UTC --:--:--</span>
+    </div>
+    <div class="telemetry-ticker-wrap">
+      <div id="live-ticker" class="telemetry-ticker">
+        <span>OFFICIAL SETTING: <strong>85 SECONDS TO MIDNIGHT</strong></span>
+        <span>•</span>
+        <span>WORLD THREAT MAP ACTIVE</span>
+      </div>
+    </div>
+    <div class="telemetry-right">
+      <button id="sound-toggle" class="btn-chip" type="button" aria-pressed="false" title="Toggle synthesized clock pulse audio">
+        <span id="sound-icon">🔇</span> <span id="sound-label">Audio Pulse: Off</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="60 40" />
+            <circle cx="20" cy="5" r="2" fill="#ff3b30" />
+            <line x1="20" y1="20" x2="20" y2="8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="20" y1="20" x2="17" y2="7" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="2.5" fill="#ff3b30" />
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">DOOMSDAY CLOCK</span>
+          <span class="brand-subtitle">GLOBAL RISK &amp; HISTORY OBSERVATORY</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <a href="index.html" class="nav-link">Observatory</a>
+        <a href="intelligence.html" class="nav-link">Live Feed <span class="nav-badge" id="nav-feed-count">LIVE</span></a>
+        <a href="map.html" class="nav-link active">Threat Map</a>
+        <a href="simulator.html" class="nav-link">Simulators</a>
+        <a href="timeline.html" class="nav-link">1947–2026 Archive</a>
+        <a href="about.html" class="nav-link">Dossiers &amp; About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- PAGE HERO -->
+    <section class="page-hero">
+      <div class="container page-hero-inner">
+        <div class="breadcrumb-nav">
+          <a href="index.html">Observatory</a>
+          <span>/</span>
+          <span>Geospatial Intelligence</span>
+        </div>
+        <h1 class="page-hero-title">Interactive World Threat Map &amp; Strategic Arsenals</h1>
+        <p class="page-hero-desc">
+          Geospatial visualization tracking all 9 nuclear-armed states, active 2026 regional escalation flashpoints, live USGS seismic detections, and arms control treaty compliance.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION: GEOSPATIAL MAP -->
+    <section id="global-map-section" class="section-block" style="padding-top: 0;">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">GEOSPATIAL RISK OBSERVATORY</span>
+            <h2 class="section-title">Strategic Flashpoint &amp; Arsenal Cartography</h2>
+            <p class="section-desc">
+              Click any nuclear-armed state, 2026 Bulletin flashpoint, or live seismic marker on the map below to inspect detailed telemetry, warhead inventories, and regional impact analyses.
+            </p>
+          </div>
+          <div class="filter-pill-group" role="group" aria-label="Map Layer Filters">
+            <button class="tl-filter-btn active" data-map-layer="all" type="button">All Strategic Layers</button>
+            <button class="tl-filter-btn" data-map-layer="nuclear" type="button">⚛️ Nuclear States</button>
+            <button class="tl-filter-btn" data-map-layer="flashpoint" type="button">⚡ 2026 Flashpoints</button>
+            <button class="tl-filter-btn" data-map-layer="live" type="button">🌊 Live USGS Seismic</button>
+            <button class="tl-filter-btn" data-map-layer="climate" type="button">🌡️ Climate Stress</button>
+          </div>
+        </div>
+
+        <!-- Planetary Telemetry Bar -->
+        <div class="planetary-gauges-row">
+          <div class="digital-box">
+            <span class="digital-label">ATMOSPHERIC CO₂ (MAUNA LOA)</span>
+            <span class="digital-val mono" style="color: #fbbf24;">426.8 ppm (+2.8 YoY)</span>
+          </div>
+          <div class="digital-box">
+            <span class="digital-label">CLEAN ELECTRICITY SHARE (2026 REPORT)</span>
+            <span class="digital-val mono" style="color: #34d399;">40.2% RECORD MILESTONE</span>
+          </div>
+          <div class="digital-box">
+            <span class="digital-label">GLOBAL TEMP ANOMALY</span>
+            <span class="digital-val mono" style="color: #ff3b30;">+1.52°C OVER BASELINE</span>
+          </div>
+          <div class="digital-box">
+            <span class="digital-label">SPACE WEATHER / GEOMAGNETIC</span>
+            <span class="digital-val mono" style="color: #38bdf8;">Kp 3.1 • QUIET/MODERATE</span>
+          </div>
+        </div>
+
+        <div class="map-stage-grid">
+          <div class="map-card">
+            <div class="map-card-header">
+              <span class="mono" style="font-size: 0.78rem; color: #94a3b8;">
+                CYLINDRICAL EQUIDISTANT PROJECTION (70°N – 60°S) • CLICK NODES FOR DOSSIER
+              </span>
+              <span class="live-dot" style="animation: pulseDot 1.4s infinite;"></span>
+            </div>
+            <div class="map-svg-wrap">
+              <svg id="world-threat-map" viewBox="0 0 1000 500" role="img" aria-label="World Threat Map"></svg>
+            </div>
+          </div>
+
+          <!-- Detail Drawer -->
+          <div id="node-detail-drawer" class="node-drawer">
+            <span class="section-kicker">STRATEGIC NODE DOSSIER</span>
+            <h3 id="node-drawer-title" style="font-size: 1.35rem; margin: 0.35rem 0;">Select Any Map Node</h3>
+            <span id="node-drawer-status" class="status-pill status-high">SELECT MARKER</span>
+            <p id="node-drawer-desc" style="color: #cbd5e1; font-size: 0.88rem; line-height: 1.5; margin: 0.85rem 0;">
+              Click any pulsing marker on the map to inspect estimated nuclear warhead stockpiles, treaty status, or 2026 regional flashpoint details cited by the Science and Security Board.
+            </p>
+            <div class="drawer-stats-grid">
+              <div class="digital-box">
+                <span class="digital-label">WARHEAD ESTIMATE</span>
+                <span id="node-drawer-warheads" class="digital-val mono">--</span>
+              </div>
+              <div class="digital-box">
+                <span class="digital-label">FIRST TEST / CONFLICT</span>
+                <span id="node-drawer-test" class="digital-val mono">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW FEATURE: Intercontinental Ballistic Missile Flight Time Calculator -->
+        <div class="flight-calc-box">
+          <div class="section-header-row" style="margin-bottom: 0.75rem;">
+            <div>
+              <span class="section-kicker">DECISION COMPRESSION TELEMETRY</span>
+              <h3 style="font-size: 1.25rem;">Strategic Ballistic Missile Flight &amp; Alert Window Calculator</h3>
+              <p style="font-size: 0.85rem; color: #94a3b8;">
+                Model approximate sub-orbital trajectory distances, minimum radar warning windows, and decision compression intervals between major strategic launch facilities and command centers.
+              </p>
+            </div>
+          </div>
+
+          <div class="calc-grid">
+            <div>
+              <label class="digital-label" for="missile-origin-select">LAUNCH ORIGIN</label>
+              <select id="missile-origin-select" class="city-selector" style="width: 100%; margin-top: 0.35rem;">
+                <option value="usa-minot">Minot AFB, North Dakota (USA - ICBM)</option>
+                <option value="rus-kozelsk">Kozelsk Missile Base (Russia - ICBM)</option>
+                <option value="chn-yibin">Rocket Force Base (China - ICBM)</option>
+                <option value="uk-faslane">HMNB Clyde Faslane (UK - Vanguard SSBN)</option>
+                <option value="fra-ilelongue">Île Longue, Brest (France - Triomphant SSBN)</option>
+                <option value="dprk-ryongsong">Pyongyang Command (North Korea - Hwasong)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="digital-label" for="missile-target-select">TARGET COMMAND CENTER</label>
+              <select id="missile-target-select" class="city-selector" style="width: 100%; margin-top: 0.35rem;">
+                <option value="moscow">Moscow, Russian Federation</option>
+                <option value="dc">Washington, D.C., United States</option>
+                <option value="beijing">Beijing, People's Republic of China</option>
+                <option value="london">London, United Kingdom</option>
+                <option value="paris">Paris, France</option>
+                <option value="tokyo">Tokyo, Japan</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="digital-label" for="missile-type-select">DELIVERY SYSTEM</label>
+              <select id="missile-type-select" class="city-selector" style="width: 100%; margin-top: 0.35rem;">
+                <option value="icbm">Ground-Based ICBM (Mach 20–24 Sub-Orbital)</option>
+                <option value="slbm">Submarine Depressed Trajectory (SLBM)</option>
+                <option value="hypersonic">Hypersonic Glide Vehicle (HGV Atmosphere)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="planetary-gauges-row" style="margin-top: 1rem;">
+            <div class="digital-box">
+              <span class="digital-label">GREAT-CIRCLE DISTANCE</span>
+              <span id="missile-dist-val" class="digital-val mono" style="color: #38bdf8;">7,850 km</span>
+            </div>
+            <div class="digital-box">
+              <span class="digital-label">ESTIMATED FLIGHT TIME</span>
+              <span id="missile-time-val" class="digital-val mono" style="color: #ff3b30;">27m 15s</span>
+            </div>
+            <div class="digital-box">
+              <span class="digital-label">DECISION COMPRESSION WINDOW</span>
+              <span id="missile-alert-val" class="digital-val mono" style="color: #fbbf24;">~8 to 11 minutes</span>
+            </div>
+            <div class="digital-box">
+              <span class="digital-label">INTERCEPTION FEASIBILITY</span>
+              <span id="missile-gmd-val" class="digital-val mono" style="color: #94a3b8;">Marginal / Low Probability</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: NUCLEAR ARSENAL & TREATY TRACKER MATRIX -->
+    <section id="treaty-matrix-section" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">GLOBAL STRATEGIC BALANCE</span>
+            <h2 class="section-title">Nuclear Arsenals &amp; Arms Control Treaty Status</h2>
+            <p class="section-desc">
+              Estimated nuclear warhead inventories compiled from the Federation of American Scientists (FAS) and SIPRI, cross-referenced with active and lapsed international arms control treaties.
+            </p>
+          </div>
+        </div>
+
+        <div class="matrix-split-grid">
+          <!-- Left: Stockpile Bars -->
+          <div class="sensor-panel">
+            <span class="badge-source">FAS Nuclear Notebook 2026</span>
+            <h3 style="font-size: 1.25rem; margin-top: 0.5rem; margin-bottom: 0.25rem;">Estimated Global Warhead Stockpiles</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 1rem;">
+              Total global inventory: ~12,100 warheads. The United States and Russia possess ~89% of all nuclear weapons worldwide.
+            </p>
+            <div id="arsenal-bars-list" class="arsenal-bars-wrap"></div>
+          </div>
+
+          <!-- Right: Major Treaty Matrix -->
+          <div class="sensor-panel">
+            <span class="badge-source">United Nations Office for Disarmament Affairs</span>
+            <h3 style="font-size: 1.25rem; margin-top: 0.5rem; margin-bottom: 0.25rem;">Key Arms Control Treaties Status</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 1rem;">
+              The erosion of bilateral and multilateral arms control frameworks is a primary driver pushing the Clock closer to midnight.
+            </p>
+            <div id="treaty-table-wrap" class="treaty-table-wrap"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-brand"><strong>DOOMSDAY CLOCK LIVE OBSERVATORY</strong></p>
+        <p class="footer-note" id="footer-citations"></p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Observatory</a>
+        <a href="intelligence.html">Live Feed</a>
+        <a href="map.html">Threat Map</a>
+        <a href="simulator.html">Simulators</a>
+        <a href="timeline.html">1947–2026 Archive</a>
+        <a href="about.html">Dossiers &amp; About</a>
+        <a href="#top">Back to Top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+</body>
+</html>

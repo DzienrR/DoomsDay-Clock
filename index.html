@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE DOOMSDAY CLOCK — 85 Seconds to Midnight | Live Global Observatory</title>
+  <meta name="description" content="Interactive Doomsday Clock Observatory (85 Seconds to Midnight, 2026). Explore the complete 1947–2026 timeline, live global news & telemetry feeds, and the What-If Simulator." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top Live Telemetry Bar -->
+  <div class="telemetry-bar" role="region" aria-label="Live Global Telemetry">
+    <div class="telemetry-left">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="telemetry-label">OBSERVATORY STATUS: <strong>LIVE</strong></span>
+      <span class="telemetry-divider">|</span>
+      <span id="utc-clock" class="mono">UTC --:--:--</span>
+    </div>
+    <div class="telemetry-ticker-wrap">
+      <div id="live-ticker" class="telemetry-ticker">
+        <span>OFFICIAL 2026 SETTING: <strong>85 SECONDS TO MIDNIGHT (23:58:35)</strong> — CLOSEST TO MIDNIGHT SINCE 1947</span>
+        <span>•</span>
+        <span>NEW START TREATY EXPIRED FEB 5, 2026</span>
+        <span>•</span>
+        <span>LIVE GLOBAL NEWS, NASA EONET &amp; USGS TELEMETRY ACTIVE</span>
+      </div>
+    </div>
+    <div class="telemetry-right">
+      <button id="sound-toggle" class="btn-chip" type="button" aria-pressed="false" title="Toggle synthesized clock pulse audio">
+        <span id="sound-icon">🔇</span> <span id="sound-label">Audio Pulse: Off</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand">
+        <div class="brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="60 40" />
+            <circle cx="20" cy="5" r="2" fill="#ff3b30" />
+            <line x1="20" y1="20" x2="20" y2="8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="20" y1="20" x2="17" y2="7" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="2.5" fill="#ff3b30" />
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">DOOMSDAY CLOCK</span>
+          <span class="brand-subtitle">GLOBAL RISK &amp; HISTORY OBSERVATORY</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <a href="index.html" class="nav-link active">Observatory</a>
+        <a href="intelligence.html" class="nav-link">Live Feed <span class="nav-badge" id="nav-feed-count">LIVE</span></a>
+        <a href="map.html" class="nav-link">Threat Map</a>
+        <a href="simulator.html" class="nav-link">Simulators</a>
+        <a href="timeline.html" class="nav-link">1947–2026 Archive</a>
+        <a href="about.html" class="nav-link">Dossiers &amp; About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO SECTION: INTERACTIVE DOOMSDAY CLOCK & TIME TRAVEL -->
+    <section id="clock-hero" class="hero-section">
+      <div class="container hero-grid">
+        <!-- Left Column: Interactive SVG Clock Face -->
+        <div class="clock-stage-card">
+          <div class="clock-stage-header">
+            <div class="mode-badge-wrap">
+              <span id="clock-mode-badge" class="status-pill status-critical">OFFICIAL 2026 READING</span>
+              <button id="reset-2026-btn" class="btn-reset hidden" type="button">↺ Return to Live</button>
+              <button id="sync-clock-btn" class="btn-chip" type="button" title="Check Wikipedia &amp; Bulletin records for newly announced official clock settings">
+                <span id="sync-clock-icon">🔄</span> <span id="sync-clock-label">Check Official Sync</span>
+              </button>
+            </div>
+            <div class="view-switch" role="group" aria-label="Clock Face Style">
+              <button id="view-full-btn" class="view-btn active" type="button">Full Dial</button>
+              <button id="view-quadrant-btn" class="view-btn" type="button">1947 Quadrant</button>
+            </div>
+          </div>
+
+          <div class="clock-canvas-wrap" id="clock-canvas-wrap">
+            <svg id="doomsday-svg" viewBox="0 0 420 420" role="img" aria-label="Interactive Doomsday Clock showing time to midnight">
+              <defs>
+                <radialGradient id="dangerGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ff3b30" stop-opacity="0.22" />
+                  <stop offset="65%" stop-color="#ff3b30" stop-opacity="0.05" />
+                  <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+                </radialGradient>
+                <linearGradient id="dangerArcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ff9500" />
+                  <stop offset="100%" stop-color="#ff2d20" />
+                </linearGradient>
+                <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+
+              <circle cx="210" cy="210" r="195" fill="url(#dangerGlow)" class="clock-ambient-circle" />
+              <circle cx="210" cy="210" r="184" fill="#0b0d13" stroke="#232838" stroke-width="2" />
+              <circle cx="210" cy="210" r="172" fill="none" stroke="#181c28" stroke-width="1" stroke-dasharray="3 6" />
+
+              <path id="clock-danger-sector" d="" fill="rgba(255, 59, 48, 0.16)" />
+              <path id="clock-danger-arc" d="" fill="none" stroke="url(#dangerArcGrad)" stroke-width="6" stroke-linecap="round" filter="url(#neonGlow)" />
+
+              <g id="clock-ticks"></g>
+
+              <g transform="translate(210, 26)">
+                <polygon points="0,12 -7,0 7,0" fill="#ff3b30" />
+              </g>
+              <text x="210" y="66" text-anchor="middle" class="clock-midnight-label">MIDNIGHT (00:00)</text>
+
+              <g id="ghost-hand-group" class="hidden" transform="rotate(0 210 210)">
+                <line x1="210" y1="230" x2="210" y2="54" stroke="#38bdf8" stroke-width="3" stroke-dasharray="5 4" stroke-linecap="round" />
+                <circle cx="210" cy="54" r="4" fill="#38bdf8" />
+              </g>
+
+              <g id="hour-hand-group" transform="rotate(-0.7 210 210)">
+                <line x1="210" y1="232" x2="210" y2="96" stroke="#e2e8f0" stroke-width="7" stroke-linecap="round" />
+              </g>
+
+              <g id="minute-hand-group" transform="rotate(-8.5 210 210)">
+                <line x1="210" y1="242" x2="210" y2="48" stroke="#ff3b30" stroke-width="4.5" stroke-linecap="round" filter="url(#neonGlow)" />
+                <circle cx="210" cy="56" r="3.5" fill="#ffffff" />
+              </g>
+
+              <g id="pulse-hand-group" transform="rotate(-8.5 210 210)">
+                <line x1="210" y1="210" x2="210" y2="42" stroke="rgba(255, 149, 0, 0.55)" stroke-width="1.5" stroke-dasharray="2 4" />
+              </g>
+
+              <circle cx="210" cy="210" r="11" fill="#181c28" stroke="#ff3b30" stroke-width="3" />
+              <circle cx="210" cy="210" r="4" fill="#ffffff" />
+            </svg>
+          </div>
+
+          <div class="clock-scrubber-box">
+            <div class="scrubber-top">
+              <label for="year-scrubber" class="scrubber-label">
+                <span id="scrubber-title">⏱ TIME-TRAVEL SCRUBBER (1947–2026)</span>
+                <span id="scrubber-year-display" class="mono accent-text">2026 • 85 SECONDS</span>
+              </label>
+              <div class="scrubber-controls">
+                <button id="play-history-btn" class="btn-mini" type="button">
+                  ▶ Play 1947→2026
+                </button>
+              </div>
+            </div>
+            <input id="year-scrubber" type="range" min="0" max="27" value="27" step="1" aria-label="Scrub through all official Doomsday Clock settings from 1947 to 2026" />
+            <div class="scrubber-ticks-labels">
+              <span>1947 (7m)</span>
+              <span>1953 (2m)</span>
+              <span>1963 (12m)</span>
+              <span>1984 (3m)</span>
+              <span>1991 (17m Safest)</span>
+              <span>2020 (100s)</span>
+              <span id="scrubber-latest-tick">2026 (85s)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Readout, Context & Key Drivers -->
+        <div class="hero-info-panel">
+          <div class="eyebrow-row">
+            <span class="eyebrow-tag">BULLETIN OF THE ATOMIC SCIENTISTS • EST. 1947</span>
+            <span id="selected-year-pill" class="year-pill mono">JAN 27, 2026</span>
+          </div>
+
+          <h1 class="hero-reading" id="hero-reading-title">
+            <span class="reading-number" id="reading-value">85</span>
+            <span class="reading-unit" id="reading-unit">SECONDS TO MIDNIGHT</span>
+          </h1>
+
+          <div class="digital-readout-row">
+            <div class="digital-box">
+              <span class="digital-label">24-HOUR CLOCK</span>
+              <span class="digital-val mono" id="digital-24h">23:58:35</span>
+            </div>
+            <div class="digital-box">
+              <span class="digital-label">CHANGE FROM PRIOR</span>
+              <span class="digital-val mono delta-forward" id="digital-delta">−4 SECONDS (CLOSER)</span>
+            </div>
+            <div class="digital-box">
+              <span class="digital-label">HISTORICAL RANK</span>
+              <span class="digital-val mono" id="digital-rank">#1 CLOSEST EVER</span>
+            </div>
+          </div>
+
+          <div class="statement-card" id="active-year-card">
+            <div class="statement-card-header">
+              <h2 id="statement-heading">Why the Clock Moved to 85 Seconds in 2026</h2>
+              <a id="statement-source-link" href="https://en.wikipedia.org/wiki/Doomsday_Clock" target="_blank" rel="noopener noreferrer" class="source-chip">
+                Verified Source ↗
+              </a>
+            </div>
+            <p id="statement-summary" class="statement-body"></p>
+            <blockquote class="scientist-quote" id="statement-quote">
+              "It's important to remember that the clock does not predict the future. It illuminates our current reality. The clock has turned back before, and it can again."
+              <footer>— <strong>Alexandra Bell</strong>, President &amp; CEO, Bulletin of the Atomic Scientists</footer>
+            </blockquote>
+          </div>
+
+          <div class="threat-mini-grid" aria-label="2026 Pillar Severity">
+            <a href="#live-intel" data-filter-trigger="nuclear" class="threat-mini-card">
+              <div class="threat-mini-top">
+                <span class="threat-icon">☢️</span>
+                <span class="threat-severity critical">EXTREME</span>
+              </div>
+              <h3>Nuclear Risk</h3>
+              <p>Treaty expiration, regional conflicts &amp; arsenal modernization</p>
+              <div class="meter-bar"><div class="meter-fill" style="width: 96%"></div></div>
+            </a>
+
+            <a href="#live-intel" data-filter-trigger="climate" class="threat-mini-card">
+              <div class="threat-mini-top">
+                <span class="threat-icon">🌡️</span>
+                <span class="threat-severity high">SEVERE</span>
+              </div>
+              <h3>Climate Crisis</h3>
+              <p>Record warming above 1.5°C threshold &amp; extreme weather events</p>
+              <div class="meter-bar"><div class="meter-fill" style="width: 90%"></div></div>
+            </a>
+
+            <a href="#live-intel" data-filter-trigger="ai" class="threat-mini-card">
+              <div class="threat-mini-top">
+                <span class="threat-icon">🤖</span>
+                <span class="threat-severity high">ACCELERATING</span>
+              </div>
+              <h3>AI &amp; Disruptive Tech</h3>
+              <p>Autonomous systems, cyber operations &amp; synthetic disinformation</p>
+              <div class="meter-bar"><div class="meter-fill" style="width: 88%"></div></div>
+            </a>
+
+            <a href="#live-intel" data-filter-trigger="bio" class="threat-mini-card">
+              <div class="threat-mini-top">
+                <span class="threat-icon">🧬</span>
+                <span class="threat-severity elevated">HIGH</span>
+              </div>
+              <h3>Biosecurity</h3>
+              <p>Biotechnology governance gaps &amp; global surveillance readiness</p>
+              <div class="meter-bar"><div class="meter-fill" style="width: 82%"></div></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OBSERVATORY PORTAL & EXPLORATION HUB -->
+    <section class="section-block" style="padding-top: 1.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border-subtle);">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">OBSERVATORY HUBS &amp; INTERACTIVE TOOLS</span>
+            <h2 class="section-title">Specialized Intelligence &amp; Simulation Laboratories</h2>
+            <p class="section-desc">
+              Explore dedicated interactive workspaces with deep-dive telemetry, full-screen geospatial intelligence, scenario forecasting, and the complete 79-year archives.
+            </p>
+          </div>
+        </div>
+        <div class="portal-grid">
+          <a href="intelligence.html" class="portal-card">
+            <div>
+              <div class="portal-card-icon">📡</div>
+              <h3>Live Intelligence &amp; Sensors</h3>
+              <p>Real-time threat indexing via Wikipedia Knowledge Graph, NASA EONET v3 natural hazards satellite feed, and USGS M4.5+ seismic station monitoring.</p>
+            </div>
+            <div class="portal-card-footer">Open Live Feed &amp; Sensors →</div>
+          </a>
+          <a href="map.html" class="portal-card">
+            <div>
+              <div class="portal-card-icon">🌍</div>
+              <h3>World Threat Map &amp; Arsenals</h3>
+              <p>Full-screen interactive strategic map tracking 9 nuclear stockpiles, 2026 flashpoints, real-time seismic epicenters, and ICBM flight time windows.</p>
+            </div>
+            <div class="portal-card-footer">Launch Threat Map &amp; Arsenals →</div>
+          </a>
+          <a href="simulator.html" class="portal-card">
+            <div>
+              <div class="portal-card-icon">🧪</div>
+              <h3>Crisis &amp; Nuclear Winter Simulators</h3>
+              <p>Toggle 12 policy levers to model ghost clock hand trajectories, or simulate TTAPS nuclear winter fallout using live Open-Meteo city weather telemetry.</p>
+            </div>
+            <div class="portal-card-footer">Enter Simulation Lab →</div>
+          </a>
+          <a href="timeline.html" class="portal-card">
+            <div>
+              <div class="portal-card-icon">📜</div>
+              <h3>1947–2026 Archive &amp; Birth Machine</h3>
+              <p>Complete 79-year trajectory graph, 28 historical adjustment cards with archive search, and the personal lifetime Doomsday Time Machine with PNG export.</p>
+            </div>
+            <div class="portal-card-footer">Explore 79-Year Archive →</div>
+          </a>
+          <a href="about.html" class="portal-card">
+            <div>
+              <div class="portal-card-icon">🔬</div>
+              <h3>Risk Dossiers, Science &amp; Culture</h3>
+              <p>Comprehensive dossiers across Nuclear, Climate, AI, and Bio threats, plus the Science &amp; Security Board consensus methodology and bibliography.</p>
+            </div>
+            <div class="portal-card-footer">Read Strategic Dossiers →</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LIVE GLOBAL INTELLIGENCE STREAM -->
+    <section id="live-intel" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">REAL-TIME GLOBAL INTELLIGENCE</span>
+            <h2 class="section-title">Live World Events Driving the Clock</h2>
+            <p class="section-desc">
+              Real-time news and global event streams aggregated live from <strong>Google News RSS</strong> and the open-source <strong>GDELT Project API</strong>, categorized by the four pillars monitored by the Science and Security Board.
+            </p>
+          </div>
+          <div class="feed-meta-controls">
+            <div class="api-status-box">
+              <span class="live-dot" id="feed-status-dot"></span>
+              <span id="feed-status-text" class="mono">Fetching live global streams...</span>
+            </div>
+            <button id="refresh-feed-btn" class="btn-secondary" type="button">⟳ Refresh Live Feed</button>
+          </div>
+        </div>
+
+        <div class="intel-toolbar">
+          <div class="filter-pills" role="tablist" aria-label="Filter News by Category">
+            <button class="filter-pill active" data-category="all" type="button">🌍 All Drivers</button>
+            <button class="filter-pill" data-category="nuclear" type="button">☢️ Nuclear &amp; Security</button>
+            <button class="filter-pill" data-category="climate" type="button">🌡️ Climate &amp; Earth</button>
+            <button class="filter-pill" data-category="ai" type="button">🤖 AI &amp; Cyber</button>
+            <button class="filter-pill" data-category="bio" type="button">🧬 Biosecurity</button>
+            <button class="filter-pill" data-category="diplomacy" type="button">🕊️ Diplomacy &amp; Treaties</button>
+          </div>
+
+          <form id="custom-news-form" class="search-bar-form">
+            <input
+              id="custom-news-input"
+              type="search"
+              placeholder="Search live global news (e.g., arms control, Arctic ice, AI safety)..."
+              aria-label="Search live global news"
+            />
+            <button type="submit" class="btn-primary">Search Live</button>
+          </form>
+        </div>
+
+        <div class="threat-pulse-banner" id="threat-pulse-banner">
+          <div class="pulse-stat">
+            <span class="pulse-stat-label">LIVE ARTICLES ANALYZED</span>
+            <strong class="pulse-stat-val mono" id="stat-total-articles">--</strong>
+          </div>
+          <div class="pulse-stat">
+            <span class="pulse-stat-label">ACTIVE FILTER</span>
+            <strong class="pulse-stat-val mono" id="stat-dominant-vector">ALL GLOBAL DRIVERS</strong>
+          </div>
+          <div class="pulse-stat">
+            <span class="pulse-stat-label">COMPUTED STREAM TENSION INDEX</span>
+            <strong class="pulse-stat-val mono accent-text" id="stat-tension-score">-- / 100</strong>
+          </div>
+          <div class="pulse-stat">
+            <span class="pulse-stat-label">DATA SOURCES</span>
+            <strong class="pulse-stat-val mono">Google News + GDELT v2 + Curated Archive</strong>
+          </div>
+        </div>
+
+        <div id="news-grid" class="news-grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: LIVE PLANETARY SENSORS -->
+    <section id="earth-telemetry" class="section-block section-alt">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">OPEN-SOURCE PLANETARY TELEMETRY</span>
+            <h2 class="section-title">Live Earth &amp; Seismic Anomaly Monitors</h2>
+            <p class="section-desc">
+              Direct browser telemetry from <strong>NASA's Earth Observatory Natural Event Tracker (EONET API)</strong> and the <strong>USGS Real-Time Seismic Network</strong>.
+            </p>
+          </div>
+          <button id="refresh-sensors-btn" class="btn-secondary" type="button">⟳ Sync NASA &amp; USGS</button>
+        </div>
+
+        <div class="sensors-grid">
+          <div class="sensor-panel">
+            <div class="sensor-panel-header">
+              <div>
+                <span class="sensor-badge climate-badge">NASA EONET v3 API • LIVE</span>
+                <h3>Active Wildfires, Severe Storms &amp; Cryosphere Events</h3>
+              </div>
+              <a href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener noreferrer" class="source-chip">NASA EONET ↗</a>
+            </div>
+            <div id="nasa-events-list" class="sensor-list"></div>
+          </div>
+
+          <div class="sensor-panel">
+            <div class="sensor-panel-header">
+              <div>
+                <span class="sensor-badge seismic-badge">USGS GEOJSON API • LIVE (M4.5+ / 24H)</span>
+                <h3>Global Seismic &amp; Strategic Zone Monitor</h3>
+              </div>
+              <a href="https://earthquake.usgs.gov/" target="_blank" rel="noopener noreferrer" class="source-chip">USGS Feed ↗</a>
+            </div>
+            <div id="usgs-events-list" class="sensor-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: COMPLETE INTERACTIVE TIMELINE (1947–2026) -->
+    <section id="timeline-section" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">79 YEARS OF HISTORY (1947–2026)</span>
+            <h2 class="section-title">Every Doomsday Clock Setting &amp; Why It Moved</h2>
+            <p class="section-desc">
+              Click any point on the chart or any card below to <strong>time-travel the Doomsday Clock</strong> to that year. Since June 1947, the Clock has been adjusted 27 times—ranging from <strong>17 minutes</strong> to midnight in 1991 to <strong>85 seconds</strong> in 2026.
+            </p>
+          </div>
+          <div class="timeline-filter-group" role="group" aria-label="Filter Historical Timeline">
+            <button class="tl-filter-btn active" data-tl-filter="all" type="button">All 27 Settings</button>
+            <button class="tl-filter-btn" data-tl-filter="closer" type="button">Moved Closer (19)</button>
+            <button class="tl-filter-btn" data-tl-filter="away" type="button">Moved Back (8)</button>
+            <button class="tl-filter-btn" data-tl-filter="seconds" type="button">Seconds Era (2020–2026)</button>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="mono">DISTANCE TO MIDNIGHT (MINUTES) — LOWER IS CLOSER TO MIDNIGHT</span>
+            <span id="chart-hover-readout" class="mono accent-text">Hover or click any node to inspect year</span>
+          </div>
+          <div class="chart-svg-container">
+            <svg id="history-chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none" role="img" aria-label="Graph of Doomsday Clock settings from 1947 to 2026"></svg>
+          </div>
+        </div>
+
+        <div id="timeline-cards-grid" class="timeline-cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: DEEP-DIVE PILLARS -->
+    <section id="threat-pillars" class="section-block section-alt">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">SCIENCE &amp; SECURITY BOARD FRAMEWORK</span>
+            <h2 class="section-title">The Four Pillars Behind the 85-Second Reading</h2>
+          </div>
+        </div>
+        <div id="dossier-grid" class="dossier-grid"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: INTERACTIVE SIMULATOR -->
+    <section id="simulator-section" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">INTERACTIVE SCENARIO SANDBOX</span>
+            <h2 class="section-title">"What Moves the Clock?" — Policy &amp; Crisis Simulator</h2>
+            <p class="section-desc">
+              Toggle the diplomatic treaties and crisis scenarios below to model how global actions could push the Clock <strong>back toward safety</strong> or <strong>closer to midnight</strong>.
+            </p>
+          </div>
+          <button id="sim-reset-btn" class="btn-secondary" type="button">↺ Reset Simulator to 85s Baseline</button>
+        </div>
+
+        <div class="simulator-layout">
+          <div class="sim-controls-columns">
+            <div class="sim-col">
+              <h3 class="sim-col-title peace-title">🕊️ Diplomatic &amp; Mitigation Actions (Turn Back the Clock)</h3>
+              <div id="sim-peace-list" class="sim-items-list"></div>
+            </div>
+
+            <div class="sim-col">
+              <h3 class="sim-col-title danger-title">⚠️ Escalation &amp; Risk Scenarios (Push Closer to Midnight)</h3>
+              <div id="sim-danger-list" class="sim-items-list"></div>
+            </div>
+          </div>
+
+          <div class="sim-result-card">
+            <span class="mono section-kicker">SIMULATED BOARD ASSESSMENT</span>
+            <div class="sim-score-display">
+              <span id="sim-time-readout" class="sim-big-time mono">85 SECONDS</span>
+              <span id="sim-delta-badge" class="status-pill">BASELINE (2026 OFFICIAL)</span>
+            </div>
+            <p id="sim-explanation" class="sim-explanation">
+              Select any combination of treaties, climate commitments, or geopolitical crises on the left to model their cumulative impact on the Doomsday Clock and preview the blue ghost hand on the main clock dial above.
+            </p>
+            <div class="sim-comparison-bars">
+              <div class="sim-bar-row">
+                <span id="sim-baseline-label">Official 2026 Baseline</span>
+                <strong class="mono" id="sim-baseline-val">85s (1m 25s)</strong>
+              </div>
+              <div class="sim-bar-row">
+                <span>Your Simulated Setting</span>
+                <strong class="mono accent-text" id="sim-bar-val">85s (1m 25s)</strong>
+              </div>
+              <div class="sim-bar-row">
+                <span>1991 Record Safety (START I)</span>
+                <strong class="mono">1,020s (17m 00s)</strong>
+              </div>
+            </div>
+            <a href="#clock-hero" class="btn-primary full-width-btn">↑ View Simulated Hand on Main Clock</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: CULTURE & METHODOLOGY -->
+    <section class="section-block section-alt">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">CULTURE, METHODOLOGY &amp; DEBATE</span>
+            <h2 class="section-title">Inside the Clock: Origins, Pop Culture &amp; Scientific Debate</h2>
+          </div>
+        </div>
+        <div id="culture-grid" class="culture-grid"></div>
+      </div>
+    </section>
+
+    <!-- EXPANSION MODULE 1 & 2: GLOBAL THREAT MAP + ATMOSPHERIC / SPACE WEATHER TELEMETRY -->
+    <section id="global-map-section" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">GEOSPATIAL RISK &amp; PLANETARY GAUGES</span>
+            <h2 class="section-title">Interactive Global Flashpoint Map &amp; Atmospheric Telemetry</h2>
+            <p class="section-desc">
+              Click any nuclear-armed state, 2026 Bulletin flashpoint, or live seismic/climate anomaly marker on the map to inspect regional stockpile and risk telemetry, alongside live atmospheric CO₂ and space-weather gauges.
+            </p>
+          </div>
+          <div class="timeline-filter-group" id="map-layer-filters">
+            <button class="tl-filter-btn active" data-map-layer="all" type="button">All Layers</button>
+            <button class="tl-filter-btn" data-map-layer="nuclear" type="button">☢️ 9 Nuclear States</button>
+            <button class="tl-filter-btn" data-map-layer="flashpoint" type="button">⚡ 2026 Flashpoints</button>
+            <button class="tl-filter-btn" data-map-layer="live" type="button">🛰️ Live USGS / NASA</button>
+          </div>
+        </div>
+
+        <!-- Live Atmospheric CO2, Temp Anomaly & Space Weather Gauges -->
+        <div class="planetary-gauges-row" id="planetary-gauges-row">
+          <div class="gauge-card">
+            <span class="digital-label">ATMOSPHERIC CO₂ (MAUNA LOA BASELINE)</span>
+            <strong class="digital-val mono accent-text" id="gauge-co2">426.8 ppm</strong>
+            <span class="gauge-sub">Pre-industrial: 280 ppm (+52.4%)</span>
+          </div>
+          <div class="gauge-card">
+            <span class="digital-label">GLOBAL SURFACE TEMP ANOMALY</span>
+            <strong class="digital-val mono" style="color: #fbbf24;" id="gauge-temp">+1.54 °C</strong>
+            <span class="gauge-sub">Above 1850–1900 baseline (Paris threshold: 1.5°C)</span>
+          </div>
+          <div class="gauge-card">
+            <span class="digital-label">CLEAN ELECTRICITY SHARE (2026 REPORT)</span>
+            <strong class="digital-val mono" style="color: #34d399;" id="gauge-clean">&gt; 40.0%</strong>
+            <span class="gauge-sub">Solar + wind + nuclear record cited by Bulletin</span>
+          </div>
+          <div class="gauge-card">
+            <span class="digital-label">SOLAR GEOMAGNETIC Kp INDEX (EARLY-WARNING WATCH)</span>
+            <strong class="digital-val mono" style="color: #38bdf8;" id="gauge-kp">Kp 3.2 (Nominal)</strong>
+            <span class="gauge-sub" id="gauge-kp-sub">Satellite command &amp; radar integrity nominal</span>
+          </div>
+        </div>
+
+        <div class="map-stage-grid">
+          <div class="map-canvas-card">
+            <svg id="world-threat-map" viewBox="0 0 1000 500" role="img" aria-label="Interactive Global Threat and Nuclear Stockpile Map"></svg>
+          </div>
+          <div class="map-inspector-card" id="map-inspector-card">
+            <span class="section-kicker mono" id="map-insp-type">SELECT ANY NODE ON THE MAP</span>
+            <h3 id="map-insp-title">Global Nuclear &amp; Flashpoint Telemetry</h3>
+            <div class="map-insp-stat" id="map-insp-stat">9 Nuclear States • ~12,100 Total Warheads</div>
+            <p id="map-insp-desc">
+              Click any pulsing marker on the map to inspect estimated nuclear warhead stockpiles, treaty status, or 2026 regional flashpoint details cited by the Science and Security Board.
+            </p>
+            <div id="map-insp-meta" class="map-insp-meta"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPANSION MODULE 3 & 4: NUCLEAR WINTER / CLIMATE CITY VISUALIZER + BIRTH YEAR TIME MACHINE -->
+    <section id="personal-explorers-section" class="section-block section-alt">
+      <div class="container">
+        <div class="sensors-grid">
+          <!-- Module 3: Nuclear Winter (TTAPS) & Climate City Visualizer -->
+          <div class="sensor-panel">
+            <span class="section-kicker">TTAPS ATMOSPHERIC MODEL &amp; OPEN-METEO LIVE</span>
+            <h2 class="section-title" style="font-size: 1.5rem;">City Impact Visualizer: Nuclear Winter vs. +2°C Warming</h2>
+            <p class="section-desc" style="margin-bottom: 1rem;">
+              Select a city to fetch its <strong>live current temperature</strong> (via Open-Meteo) and model the 1983 TTAPS nuclear winter stratospheric soot plunge (−11°C to −22°C; Encyclopaedia Britannica) or severe climate warming.
+            </p>
+            <div class="visualizer-controls">
+              <select id="city-select" class="input-select" aria-label="Select a city"></select>
+              <select id="scenario-mode-select" class="input-select" aria-label="Select impact scenario">
+                <option value="ttaps-severe">☢️ TTAPS Nuclear Winter (Interior Continental: −20°C)</option>
+                <option value="ttaps-moderate">☢️ TTAPS Regional Soot Injection (−11°C)</option>
+                <option value="warming-2c">🌡️ Unchecked Climate Trajectory (+2.4°C Peak Heat)</option>
+                <option value="warming-extreme">🔥 Extreme Heatwave Amplification (+4.2°C)</option>
+              </select>
+            </div>
+            <div id="city-impact-readout" class="city-impact-box"></div>
+          </div>
+
+          <!-- Module 4: "When Were You Born?" Personal Doomsday Time Machine -->
+          <div class="sensor-panel">
+            <span class="section-kicker">PERSONAL LIFETIME TRAJECTORY</span>
+            <h2 class="section-title" style="font-size: 1.5rem;">"When Were You Born?" Doomsday Time Machine</h2>
+            <p id="birth-year-desc" class="section-desc" style="margin-bottom: 1rem;">
+              Enter your birth year (1947–2026) to see where the Doomsday Clock stood the day you were born, how many times it moved during your lifetime, and your safest vs. most dangerous years.
+            </p>
+            <form id="birth-year-form" class="search-bar-form" style="max-width: 100%; margin-bottom: 1rem;">
+              <input id="birth-year-input" type="number" min="1947" max="2026" value="1998" placeholder="Enter birth year (1947–2026)" aria-label="Enter birth year" />
+              <button type="submit" class="btn-primary">Calculate My Timeline</button>
+              <button type="button" id="download-birth-card-btn" class="btn-secondary">⬇ Save Share Card</button>
+            </form>
+            <div id="birth-year-result" class="city-impact-box"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPANSION MODULE 5: NUCLEAR ARSENAL & TREATY TRACKER MATRIX -->
+    <section id="treaty-matrix-section" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">ARSENAL &amp; DIPLOMATIC ARCHITECTURE</span>
+            <h2 class="section-title">Global Nuclear Stockpiles &amp; Arms Control Treaty Matrix</h2>
+            <p class="section-desc">
+              Compare estimated warhead inventories across the nine nuclear-armed states and track the status of landmark treaties that historically moved the Doomsday Clock.
+            </p>
+          </div>
+        </div>
+        <div class="sensors-grid">
+          <div class="sensor-panel">
+            <h3 style="margin-bottom: 0.85rem;">☢️ Estimated Nuclear Warhead Inventories by Country</h3>
+            <div id="arsenal-bars-list" class="arsenal-bars-list"></div>
+          </div>
+          <div class="sensor-panel">
+            <h3 style="margin-bottom: 0.85rem;">📜 Historic Arms Control &amp; Climate Treaties</h3>
+            <div id="treaty-table-wrap" class="treaty-table-wrap"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPANSION MODULE 6, 7 & 8: COUNTDOWN + COMMUNITY POLL + EMBED WIDGET + TAKE ACTION -->
+    <section id="community-action-section" class="section-block section-alt">
+      <div class="container">
+        <div class="sensors-grid" style="margin-bottom: 1.75rem;">
+          <!-- Module 6: Next Announcement Countdown & Community Poll -->
+          <div class="sensor-panel">
+            <span class="section-kicker">NEXT BULLETIN ASSESSMENT &amp; CROWD FORECAST</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Countdown to January 2027 Doomsday Clock Announcement</h3>
+            <div id="next-announcement-countdown" class="countdown-boxes mono"></div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.9rem 0 0.6rem;">
+              <strong>Global Community Forecast Poll:</strong> Where will the Science and Security Board set the Clock next?
+            </p>
+            <div id="poll-options-wrap" class="poll-options-wrap"></div>
+          </div>
+
+          <!-- Module 7: Shareable PNG Snapshot & Embeddable Widget Generator -->
+          <div class="sensor-panel">
+            <span class="section-kicker">SHARE &amp; EMBED OBSERVATORY</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Download Live Status Card or Embed on Your Website</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.9rem;">
+              Generate a high-resolution PNG social card of the current Doomsday Clock reading (or your selected historical year), or copy the live <code>&lt;iframe&gt;</code> widget below for blogs, classrooms, and newsrooms.
+            </p>
+            <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; margin-bottom: 1rem;">
+              <button type="button" id="download-clock-png-btn" class="btn-primary">📸 Download High-Res Status Card (PNG)</button>
+              <button type="button" id="copy-embed-btn" class="btn-secondary">📋 Copy Live Embed Code</button>
+            </div>
+            <label for="embed-code-box" class="digital-label">EMBEDDABLE LIVE WIDGET SNIPPET</label>
+            <textarea id="embed-code-box" class="embed-textarea mono" rows="3" readonly></textarea>
+          </div>
+        </div>
+
+        <!-- Module 8: "Take Action" Civic & Scientific Solutions Directory -->
+        <div class="section-header-row" style="margin-top: 2.5rem; margin-bottom: 1.25rem;">
+          <div>
+            <span class="section-kicker">HOW TO TURN BACK THE CLOCK</span>
+            <h2 class="section-title" style="font-size: 1.65rem;">"Take Action" — Civic, Diplomatic &amp; Scientific Solutions</h2>
+          </div>
+        </div>
+        <div id="take-action-grid" class="threat-mini-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-brand"><strong>DOOMSDAY CLOCK LIVE OBSERVATORY</strong></p>
+        <p class="footer-note" id="footer-citations"></p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Observatory</a>
+        <a href="intelligence.html">Live Feed</a>
+        <a href="map.html">Threat Map</a>
+        <a href="simulator.html">Simulators</a>
+        <a href="timeline.html">1947–2026 Archive</a>
+        <a href="about.html">Dossiers &amp; About</a>
+        <a href="#top">Back to Top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+</body>
+</html>

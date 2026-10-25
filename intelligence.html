@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Global Intelligence &amp; Planetary Sensors | The Doomsday Clock Observatory</title>
+  <meta name="description" content="Real-time global conflict intelligence, live news stream, NASA EONET satellite hazards, and USGS seismic network telemetry." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top Live Telemetry Bar -->
+  <div class="telemetry-bar" role="region" aria-label="Live Global Telemetry">
+    <div class="telemetry-left">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="telemetry-label">OBSERVATORY STATUS: <strong>LIVE</strong></span>
+      <span class="telemetry-divider">|</span>
+      <span id="utc-clock" class="mono">UTC --:--:--</span>
+    </div>
+    <div class="telemetry-ticker-wrap">
+      <div id="live-ticker" class="telemetry-ticker">
+        <span>OFFICIAL SETTING: <strong>85 SECONDS TO MIDNIGHT</strong></span>
+        <span>•</span>
+        <span>LIVE GLOBAL TELEMETRY ACTIVE</span>
+      </div>
+    </div>
+    <div class="telemetry-right">
+      <button id="sound-toggle" class="btn-chip" type="button" aria-pressed="false" title="Toggle synthesized clock pulse audio">
+        <span id="sound-icon">🔇</span> <span id="sound-label">Audio Pulse: Off</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="60 40" />
+            <circle cx="20" cy="5" r="2" fill="#ff3b30" />
+            <line x1="20" y1="20" x2="20" y2="8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="20" y1="20" x2="17" y2="7" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="2.5" fill="#ff3b30" />
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">DOOMSDAY CLOCK</span>
+          <span class="brand-subtitle">GLOBAL RISK &amp; HISTORY OBSERVATORY</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <a href="index.html" class="nav-link">Observatory</a>
+        <a href="intelligence.html" class="nav-link active">Live Feed <span class="nav-badge" id="nav-feed-count">LIVE</span></a>
+        <a href="map.html" class="nav-link">Threat Map</a>
+        <a href="simulator.html" class="nav-link">Simulators</a>
+        <a href="timeline.html" class="nav-link">1947–2026 Archive</a>
+        <a href="about.html" class="nav-link">Dossiers &amp; About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- PAGE HERO -->
+    <section class="page-hero">
+      <div class="container page-hero-inner">
+        <div class="breadcrumb-nav">
+          <a href="index.html">Observatory</a>
+          <span>/</span>
+          <span>Live Intelligence &amp; Telemetry</span>
+        </div>
+        <h1 class="page-hero-title">Live Global Intelligence &amp; Planetary Sensors</h1>
+        <p class="page-hero-desc">
+          Continuous multi-vector surveillance stream tracking nuclear developments, geopolitical escalations, climate anomalies, and planetary seismic telemetry in real time.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION: LIVE GLOBAL INTELLIGENCE STREAM -->
+    <section id="live-intel" class="section-block" style="padding-top: 0;">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">REAL-TIME GLOBAL RISK SIGNALS</span>
+            <h2 class="section-title">Global Threat Intelligence Feed</h2>
+            <p class="section-desc">
+              Aggregated continuously via the <strong>Wikipedia Knowledge Graph Action API</strong> and verified Bulletin security archives, cross-referenced across the four existential pillars.
+            </p>
+          </div>
+          <div class="feed-meta-controls">
+            <div class="api-status-box">
+              <span class="live-dot" id="feed-status-dot"></span>
+              <span id="feed-status-text" class="mono">Fetching live global streams...</span>
+            </div>
+            <button id="refresh-feed-btn" class="btn-refresh" type="button" title="Force refresh live intelligence feed">
+              🔄 Refresh Stream
+            </button>
+          </div>
+        </div>
+
+        <!-- Telemetry Gauges / Metrics -->
+        <div class="planetary-gauges-row">
+          <div class="digital-box">
+            <span class="digital-label">STREAM TENSION INDEX</span>
+            <span class="digital-val mono" id="stat-tension-score" style="color: #ff3b30;">-- / 100</span>
+          </div>
+          <div class="digital-box">
+            <span class="digital-label">TOTAL RECORDS INDEXED</span>
+            <span class="digital-val mono" id="stat-total-articles">-- ITEMS</span>
+          </div>
+          <div class="digital-box">
+            <span class="digital-label">ACTIVE MONITORING VECTOR</span>
+            <span class="digital-val mono" id="stat-dominant-vector">ALL PILLARS</span>
+          </div>
+          <div class="digital-box">
+            <span class="digital-label">OPEN DATA PROTOCOLS</span>
+            <span class="digital-val mono" style="color: #10b981;">WIKI + NASA + USGS</span>
+          </div>
+        </div>
+
+        <!-- Filter Controls & Live Search Bar -->
+        <div class="feed-controls-wrap">
+          <div class="filter-pill-group" role="group" aria-label="Risk Pillar Filters">
+            <button class="filter-pill active" data-category="all" type="button">All Risk Vectors</button>
+            <button class="filter-pill" data-category="nuclear" type="button">⚛️ Nuclear &amp; Security</button>
+            <button class="filter-pill" data-category="climate" type="button">🌡️ Climate &amp; Earth</button>
+            <button class="filter-pill" data-category="ai" type="button">🤖 AI &amp; Cyber</button>
+            <button class="filter-pill" data-category="bio" type="button">🧬 Biosecurity</button>
+            <button class="filter-pill" data-category="diplomacy" type="button">🕊️ Treaties &amp; Peace</button>
+          </div>
+
+          <form id="custom-news-form" class="search-bar-form" role="search">
+            <input
+              id="custom-news-input"
+              type="search"
+              placeholder="Search live intelligence (e.g. 'New START', 'Iran', 'Methane', 'Autonomous Weapons')..."
+              aria-label="Search live global intelligence stream"
+            />
+            <button type="submit" class="btn-search">Query Stream</button>
+          </form>
+        </div>
+
+        <!-- Articles Grid -->
+        <div id="news-grid" class="news-card-grid" aria-live="polite">
+          <div class="loading-state">Syncing live global stream from Wikipedia Open Knowledge Graph...</div>
+        </div>
+
+        <!-- NEW FEATURE: Dispatch Exporter -->
+        <div class="flight-calc-box" style="margin-top: 2rem;">
+          <div class="section-header-row" style="margin-bottom: 0.75rem;">
+            <div>
+              <span class="section-kicker">SITUATION DISPATCH</span>
+              <h3 style="font-size: 1.25rem;">Live Global Situation Dispatch Generator</h3>
+              <p style="font-size: 0.85rem; color: #94a3b8;">
+                Compile currently indexed global risk signals, seismic anomalies, and active hazard coordinates into an operational briefing.
+              </p>
+            </div>
+            <button type="button" id="copy-dispatch-btn" class="btn-primary" style="align-self: center;">
+              📋 Generate &amp; Copy Dispatch
+            </button>
+          </div>
+          <div id="dispatch-output" class="mono" style="font-size: 0.76rem; background: #05070c; border: 1px solid var(--border-subtle); padding: 0.85rem; border-radius: 8px; color: #7dd3fc; max-height: 120px; overflow-y: auto;">
+            Click "Generate &amp; Copy Dispatch" to create an operational markdown briefing.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: PLANETARY SENSORS -->
+    <section id="earth-telemetry" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">OPEN-SOURCE SENSOR NETWORKS</span>
+            <h2 class="section-title">Planetary Hazard &amp; Seismic Telemetry</h2>
+            <p class="section-desc">
+              Direct telemetry from NASA's Earth Observatory Natural Event Tracker (EONET v3) and the United States Geological Survey (USGS) Earthquake Hazards Program.
+            </p>
+          </div>
+          <button id="refresh-sensors-btn" class="btn-refresh" type="button" title="Refresh NASA and USGS telemetry feeds">
+            🔄 Refresh Sensors
+          </button>
+        </div>
+
+        <div class="sensors-split-grid">
+          <!-- Sensor Module 1: NASA EONET -->
+          <div class="sensor-panel">
+            <div class="sensor-panel-header">
+              <div>
+                <span class="badge-source">NASA EONET v3 API</span>
+                <h3>Active Satellite Hazard Events</h3>
+              </div>
+              <span class="mono" style="font-size: 0.75rem; color: #fbbf24;">SATELLITE ORBIT STREAM</span>
+            </div>
+            <p class="sensor-desc">
+              Real-time satellite detection of active wildfires, volcanic eruptions, severe storms, and sea ice anomalies monitored by Earth observation satellites.
+            </p>
+            <div id="nasa-events-list" class="sensor-list-box" aria-live="polite">
+              <div class="loading-state">Connecting to NASA Goddard EONET v3...</div>
+            </div>
+          </div>
+
+          <!-- Sensor Module 2: USGS Seismic Feed -->
+          <div class="sensor-panel">
+            <div class="sensor-panel-header">
+              <div>
+                <span class="badge-source">USGS GeoJSON API</span>
+                <h3>Real-Time Global Seismic Feed (M4.5+)</h3>
+              </div>
+              <span class="mono" style="font-size: 0.75rem; color: #ff3b30;">24-HOUR GLOBAL WATCH</span>
+            </div>
+            <p class="sensor-desc">
+              Automated seismic stations tracking tectonic and explosive events. Shallow depth events (&lt;5 km) are flagged for strategic and environmental monitoring.
+            </p>
+            <div id="usgs-events-list" class="sensor-list-box" aria-live="polite">
+              <div class="loading-state">Connecting to USGS National Earthquake Information Center...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-brand"><strong>DOOMSDAY CLOCK LIVE OBSERVATORY</strong></p>
+        <p class="footer-note" id="footer-citations"></p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Observatory</a>
+        <a href="intelligence.html">Live Feed</a>
+        <a href="map.html">Threat Map</a>
+        <a href="simulator.html">Simulators</a>
+        <a href="timeline.html">1947–2026 Archive</a>
+        <a href="about.html">Dossiers &amp; About</a>
+        <a href="#top">Back to Top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+</body>
+</html>

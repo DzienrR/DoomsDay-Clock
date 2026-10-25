@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policy &amp; Nuclear Winter Simulators | The Doomsday Clock Observatory</title>
+  <meta name="description" content="Interactive policy sandbox and TTAPS nuclear winter climate simulator modeling geopolitical actions, ghost clock hands, and live city weather telemetry." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top Live Telemetry Bar -->
+  <div class="telemetry-bar" role="region" aria-label="Live Global Telemetry">
+    <div class="telemetry-left">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="telemetry-label">OBSERVATORY STATUS: <strong>LIVE</strong></span>
+      <span class="telemetry-divider">|</span>
+      <span id="utc-clock" class="mono">UTC --:--:--</span>
+    </div>
+    <div class="telemetry-ticker-wrap">
+      <div id="live-ticker" class="telemetry-ticker">
+        <span>OFFICIAL SETTING: <strong>85 SECONDS TO MIDNIGHT</strong></span>
+        <span>•</span>
+        <span>POLICY &amp; CLIMATE SIMULATORS ACTIVE</span>
+      </div>
+    </div>
+    <div class="telemetry-right">
+      <button id="sound-toggle" class="btn-chip" type="button" aria-pressed="false" title="Toggle synthesized clock pulse audio">
+        <span id="sound-icon">🔇</span> <span id="sound-label">Audio Pulse: Off</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="60 40" />
+            <circle cx="20" cy="5" r="2" fill="#ff3b30" />
+            <line x1="20" y1="20" x2="20" y2="8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="20" y1="20" x2="17" y2="7" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="2.5" fill="#ff3b30" />
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">DOOMSDAY CLOCK</span>
+          <span class="brand-subtitle">GLOBAL RISK &amp; HISTORY OBSERVATORY</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <a href="index.html" class="nav-link">Observatory</a>
+        <a href="intelligence.html" class="nav-link">Live Feed <span class="nav-badge" id="nav-feed-count">LIVE</span></a>
+        <a href="map.html" class="nav-link">Threat Map</a>
+        <a href="simulator.html" class="nav-link active">Simulators</a>
+        <a href="timeline.html" class="nav-link">1947–2026 Archive</a>
+        <a href="about.html" class="nav-link">Dossiers &amp; About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- PAGE HERO -->
+    <section class="page-hero">
+      <div class="container page-hero-inner">
+        <div class="breadcrumb-nav">
+          <a href="index.html">Observatory</a>
+          <span>/</span>
+          <span>Simulation Laboratory</span>
+        </div>
+        <h1 class="page-hero-title">Crisis Forecasting &amp; Climate Simulators</h1>
+        <p class="page-hero-desc">
+          Test "What Moves the Clock?" policy levers to project future clock hands, or model TTAPS atmospheric nuclear winter soot cooling over live metropolitan weather baselines.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION: POLICY SIMULATOR -->
+    <section id="simulator-section" class="section-block" style="padding-top: 0;">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">WHAT-IF POLICY LABORATORY</span>
+            <h2 class="section-title">"What Moves the Clock?" — Crisis &amp; Policy Sandbox</h2>
+            <p class="section-desc">
+              Toggle diplomatic accords or escalation crises to project a simulated blue ghost hand on the Doomsday Clock.
+            </p>
+          </div>
+          <button id="sim-reset-btn" class="btn-refresh" type="button">↺ Reset All Levers</button>
+        </div>
+
+        <!-- Simulator Presets -->
+        <div style="margin-bottom: 1.25rem;">
+          <span class="digital-label" style="display: block; margin-bottom: 0.4rem;">QUICK HISTORICAL &amp; FUTURE SCENARIO PRESETS</span>
+          <div class="preset-chip-group">
+            <button type="button" class="preset-chip" id="preset-all-peace">🕊️ Total Diplomatic Breakthrough (Max Safe)</button>
+            <button type="button" class="preset-chip" id="preset-all-danger">⚡ Multi-Front Escalation (Max Danger)</button>
+            <button type="button" class="preset-chip" id="preset-climate-focus">🌱 Global 1.5°C Green Mobilization</button>
+            <button type="button" class="preset-chip" id="preset-arms-collapse">☢️ Total Arms Control Sunset</button>
+            <button type="button" class="preset-chip" id="preset-reset-baseline">↺ Clear Presets</button>
+          </div>
+        </div>
+
+        <div class="simulator-stage-grid">
+          <!-- Left: Toggles -->
+          <div class="sim-toggles-card">
+            <div class="sim-col-header">
+              <span class="badge-source" style="color: #34d399; border-color: rgba(16, 185, 129, 0.4);">🕊️ Stabilizing &amp; Diplomatic Levers</span>
+              <p style="font-size: 0.78rem; color: #94a3b8; margin: 0.35rem 0 0.75rem;">
+                International agreements and treaties that move the Clock away from midnight.
+              </p>
+            </div>
+            <div id="sim-peace-container" class="sim-toggles-list"></div>
+
+            <div class="sim-col-header" style="margin-top: 1.75rem;">
+              <span class="badge-source" style="color: #ff3b30; border-color: rgba(255, 59, 48, 0.4);">⚡ Risk Escalation &amp; Crisis Levers</span>
+              <p style="font-size: 0.78rem; color: #94a3b8; margin: 0.35rem 0 0.75rem;">
+                Geopolitical breakdowns and technical failures that advance the Clock toward midnight.
+              </p>
+            </div>
+            <div id="sim-danger-container" class="sim-toggles-list"></div>
+          </div>
+
+          <!-- Right: Clock Preview & Results -->
+          <div class="sim-result-card">
+            <span class="mono section-kicker">SIMULATED BOARD ASSESSMENT</span>
+            <div class="sim-score-display">
+              <span id="sim-time-readout" class="sim-big-time mono">85 SECONDS</span>
+              <span id="sim-delta-badge" class="status-pill">BASELINE (OFFICIAL)</span>
+            </div>
+
+            <!-- Mini Clock Stage showing Ghost Hand -->
+            <div style="display: flex; justify-content: center; margin: 1rem 0;">
+              <svg id="doomsday-svg" viewBox="0 0 420 420" width="220" height="220" role="img" aria-label="Simulated Doomsday Clock Face">
+                <circle cx="210" cy="210" r="184" fill="#0b0d13" stroke="#232838" stroke-width="2" />
+                <path id="clock-danger-sector" d="" fill="rgba(255, 59, 48, 0.16)" />
+                <path id="clock-danger-arc" d="" fill="none" stroke="#ff3b30" stroke-width="6" stroke-linecap="round" />
+                <g id="clock-ticks"></g>
+                <!-- Hands -->
+                <line id="clock-hour-hand" x1="210" y1="210" x2="210" y2="105" stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" />
+                <line id="clock-minute-hand" x1="210" y1="210" x2="210" y2="55" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" transform="rotate(-8.5 210 210)" />
+                <circle cx="210" cy="210" r="8" fill="#ff3b30" />
+                <!-- Ghost Hand -->
+                <g id="ghost-hand-group" class="hidden">
+                  <line x1="210" y1="210" x2="210" y2="45" stroke="#38bdf8" stroke-width="3" stroke-dasharray="5 3" stroke-linecap="round" />
+                  <circle cx="210" cy="45" r="5" fill="#38bdf8" />
+                </g>
+              </svg>
+            </div>
+
+            <p id="sim-explanation" class="sim-explanation">
+              Select any combination of treaties, climate commitments, or geopolitical crises on the left to model their cumulative impact on the Doomsday Clock and preview the blue ghost hand.
+            </p>
+            <div class="sim-comparison-bars">
+              <div class="sim-bar-row">
+                <span id="sim-baseline-label">Official Baseline</span>
+                <strong class="mono" id="sim-baseline-val">85s (1m 25s)</strong>
+              </div>
+              <div class="sim-bar-row">
+                <span>Your Simulated Setting</span>
+                <strong class="mono accent-text" id="sim-bar-val">85s (1m 25s)</strong>
+              </div>
+              <div class="sim-bar-row">
+                <span>1991 Record Safety (START I)</span>
+                <strong class="mono">1,020s (17m 00s)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW FEATURE: Custom Policy Scenario Builder -->
+        <div class="scenario-builder-box">
+          <div class="section-header-row" style="margin-bottom: 0.75rem;">
+            <div>
+              <span class="section-kicker">CUSTOM POLICY LAB</span>
+              <h3 style="font-size: 1.25rem;">Custom Geopolitical Scenario Builder</h3>
+              <p style="font-size: 0.85rem; color: #94a3b8;">
+                Author your own diplomatic treaty or crisis event, set a custom clock impact (+/- 45s), and test its projection on the board assessment.
+              </p>
+            </div>
+          </div>
+          <form id="custom-scenario-form" class="calc-grid" style="align-items: end;">
+            <div>
+              <label class="digital-label" for="custom-scenario-name">EVENT / INITIATIVE TITLE</label>
+              <input type="text" id="custom-scenario-name" class="city-selector" style="width: 100%; margin-top: 0.35rem;" placeholder="e.g., Global AI Non-Proliferation Treaty" required />
+            </div>
+            <div>
+              <label class="digital-label" for="custom-scenario-delta">PROJECTED CLOCK IMPACT (SECONDS)</label>
+              <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.35rem;">
+                <input type="range" id="custom-scenario-delta" min="-45" max="45" value="15" step="5" style="flex: 1;" />
+                <span id="custom-delta-readout" class="mono" style="font-weight: bold; color: #34d399; min-width: 60px;">+15s Safer</span>
+              </div>
+            </div>
+            <div>
+              <button type="submit" class="btn-primary" style="width: 100%;">+ Inject Custom Scenario</button>
+            </div>
+          </form>
+          <div id="custom-scenario-list" style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: NUCLEAR WINTER & TTAPS CLIMATE SIMULATOR -->
+    <section id="personal-explorers-section" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">ATMOSPHERIC IMPACT MODELING</span>
+            <h2 class="section-title">Nuclear Winter &amp; TTAPS Climate Impact Simulator</h2>
+            <p class="section-desc">
+              Based on the landmark 1983 TTAPS atmospheric smoke-injection study (Turco, Toon, Ackerman, Pollack, Sagan) and modern climate modeling. Select a major metropolitan area to fetch live Open-Meteo weather telemetry and project local temperature drops.
+            </p>
+          </div>
+        </div>
+
+        <div class="sensor-panel" style="margin-bottom: 2rem;">
+          <div class="visualizer-controls">
+            <div>
+              <label class="digital-label" for="city-select">SELECT GLOBAL METROPOLITAN TARGET</label>
+              <select id="city-select" class="city-selector">
+                <option value="london">London, United Kingdom (51.5°N)</option>
+                <option value="dc">Washington, D.C., United States (38.9°N)</option>
+                <option value="tokyo">Tokyo, Japan (35.7°N)</option>
+                <option value="beijing">Beijing, China (39.9°N)</option>
+                <option value="moscow">Moscow, Russian Federation (55.8°N)</option>
+                <option value="delhi">New Delhi, India (28.6°N)</option>
+                <option value="berlin">Berlin, Germany (52.5°N)</option>
+                <option value="sydney">Sydney, Australia (33.9°S)</option>
+                <option value="cairo">Cairo, Egypt (30.0°N)</option>
+                <option value="nairobi">Nairobi, Kenya (1.3°S)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="digital-label" for="winter-mode-select">ATMOSPHERIC SOOT INJECTION MODEL</label>
+              <select id="winter-mode-select" class="city-selector">
+                <option value="ttaps-severe">TTAPS Baseline Case (150 Tg Stratospheric Soot / Global Firestorms)</option>
+                <option value="ttaps-moderate">Regional Exchange (50 Tg Upper-Tropospheric Carbon / Monsoons Halt)</option>
+                <option value="warming-2c">Climate Contrast: +2.0°C Global Warming Threshold (Extreme Heatwaves)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="winter-impact-display" class="city-impact-box">
+            <!-- Populated dynamically with live Open-Meteo weather telemetry -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-brand"><strong>DOOMSDAY CLOCK LIVE OBSERVATORY</strong></p>
+        <p class="footer-note" id="footer-citations"></p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Observatory</a>
+        <a href="intelligence.html">Live Feed</a>
+        <a href="map.html">Threat Map</a>
+        <a href="simulator.html">Simulators</a>
+        <a href="timeline.html">1947–2026 Archive</a>
+        <a href="about.html">Dossiers &amp; About</a>
+        <a href="#top">Back to Top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+</body>
+</html>

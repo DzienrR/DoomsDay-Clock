@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Four Risk Dossiers, Methodology &amp; About | The Doomsday Clock Observatory</title>
+  <meta name="description" content="In-depth scientific dossiers on nuclear risks, climate tipping points, AI weaponization, biosecurity, Bulletin methodology, cultural impact, and civic solutions." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top Live Telemetry Bar -->
+  <div class="telemetry-bar" role="region" aria-label="Live Global Telemetry">
+    <div class="telemetry-left">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="telemetry-label">OBSERVATORY STATUS: <strong>LIVE</strong></span>
+      <span class="telemetry-divider">|</span>
+      <span id="utc-clock" class="mono">UTC --:--:--</span>
+    </div>
+    <div class="telemetry-ticker-wrap">
+      <div id="live-ticker" class="telemetry-ticker">
+        <span>OFFICIAL SETTING: <strong>85 SECONDS TO MIDNIGHT</strong></span>
+        <span>•</span>
+        <span>SCIENTIFIC DOSSIERS &amp; METHODOLOGY</span>
+      </div>
+    </div>
+    <div class="telemetry-right">
+      <button id="sound-toggle" class="btn-chip" type="button" aria-pressed="false" title="Toggle synthesized clock pulse audio">
+        <span id="sound-icon">🔇</span> <span id="sound-label">Audio Pulse: Off</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="34" height="34">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="60 40" />
+            <circle cx="20" cy="5" r="2" fill="#ff3b30" />
+            <line x1="20" y1="20" x2="20" y2="8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="20" y1="20" x2="17" y2="7" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="2.5" fill="#ff3b30" />
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">DOOMSDAY CLOCK</span>
+          <span class="brand-subtitle">GLOBAL RISK &amp; HISTORY OBSERVATORY</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <a href="index.html" class="nav-link">Observatory</a>
+        <a href="intelligence.html" class="nav-link">Live Feed <span class="nav-badge" id="nav-feed-count">LIVE</span></a>
+        <a href="map.html" class="nav-link">Threat Map</a>
+        <a href="simulator.html" class="nav-link">Simulators</a>
+        <a href="timeline.html" class="nav-link">1947–2026 Archive</a>
+        <a href="about.html" class="nav-link active">Dossiers &amp; About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-nav">
+      <div class="container">
+        <a href="index.html">Observatory</a> &gt; <span>The Four Risk Dossiers &amp; About</span>
+      </div>
+    </div>
+
+    <!-- Page Hero Banner -->
+    <section class="page-hero">
+      <div class="container">
+        <span class="section-kicker">SCIENCE &amp; SECURITY BOARD FRAMEWORK</span>
+        <h1 class="page-title">The Four Risk Dossiers &amp; Scientific Methodology</h1>
+        <p class="page-desc">
+          Created in 1947 by Albert Einstein, J. Robert Oppenheimer, and University of Chicago scientists, the Doomsday Clock translates the most complex planetary perils into a universal metric of urgency. Explore the scientific evidence, consensus methodology, and cultural footprint behind today's 85-second setting.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 1: THE FOUR PILLARS BEHIND THE 85-SECOND READING -->
+    <section id="threat-pillars" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">CORE THREAT ARCHITECTURE</span>
+            <h2 class="section-title">The Four Pillars Behind the Current Setting</h2>
+            <p class="section-desc">
+              The Science and Security Board synthesizes empirical telemetry across four interlocked existential threats.
+            </p>
+          </div>
+        </div>
+
+        <div id="dossier-grid" class="dossier-grid"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: SCIENCE & SECURITY BOARD (SASB) METHODOLOGY GUIDE -->
+    <section class="section-block section-alt">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">DELIBERATION ARCHITECTURE</span>
+            <h2 class="section-title">How the Science and Security Board Sets the Clock</h2>
+            <p class="section-desc">
+              The Doomsday Clock is not a meteorological forecast or a mathematical index; it is an expert consensus assessment formulated by world-leading authorities.
+            </p>
+          </div>
+        </div>
+
+        <div class="era-matrix-grid">
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #38bdf8;">01 / GOVERNANCE</span>
+              <span class="status-pill status-safe">Expert Panel</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">Who Sets the Clock?</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              The decision is made biannually by the <strong>Science and Security Board (SASB)</strong> of the <em>Bulletin of the Atomic Scientists</em>. The board comprises internationally renowned physicists, climate scientists, treaty negotiators, and cybersecurity scholars, acting in close consultation with the <strong>Board of Sponsors</strong>, which includes 9 Nobel laureates.
+            </p>
+          </div>
+
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #fbbf24;">02 / CRITERIA</span>
+              <span class="status-pill status-high">Structural Shifts</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">What Triggers Movement?</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              The Clock is <strong>not</strong> adjusted in response to daily news spikes or short-term rhetoric. Instead, the Board assesses whether the world is safer or more dangerous compared to the previous year, examining long-term institutional agreements, treaty ratifications or expirations, and irreversible physical thresholds.
+            </p>
+          </div>
+
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #ff3b30;">03 / CONSENSUS</span>
+              <span class="status-pill status-critical">Unanimous Deliberation</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">How is Consensus Reached?</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              Board members convene in Chicago and Washington D.C. every November. Working groups present classified briefings, peer-reviewed climate data, and satellite imagery across each pillar. A consensus reading is forged through rigorous cross-examination before the public announcement in late January.
+            </p>
+          </div>
+
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #34d399;">04 / SYMBOLISM</span>
+              <span class="status-pill status-safe">Midnight Meaning</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">What Does Midnight Represent?</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              <strong>Midnight represents catastrophe:</strong> the irreversible disruption of global civilization through nuclear exchange, runaway climate feedback loops, weaponized pandemics, or unaligned superintelligent autonomy. It serves as both an urgent warning and an imperative call to civic action.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: CULTURAL HISTORY & ICONOGRAPHY -->
+    <section class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">CULTURE, METHODOLOGY &amp; DEBATE</span>
+            <h2 class="section-title">Inside the Clock: Origins, Pop Culture &amp; Scientific Debate</h2>
+            <p class="section-desc">
+              From Martyl Langsdorf's iconic 1947 magazine cover to graphic novels and rock anthems.
+            </p>
+          </div>
+        </div>
+
+        <div id="culture-grid" class="culture-grid"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: CIVIC ACTION & SCIENTIFIC SOLUTIONS DIRECTORY -->
+    <section class="section-block section-alt">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">HOW TO TURN BACK THE CLOCK</span>
+            <h2 class="section-title">"Take Action" — Civic, Diplomatic &amp; Scientific Solutions</h2>
+            <p class="section-desc">
+              The Clock is not a prophecy of doom—it is a catalyst for action. Explore verified programs and initiatives where citizen diplomacy and research push the hands back.
+            </p>
+          </div>
+        </div>
+
+        <div id="take-action-grid" class="threat-mini-grid"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: COMPREHENSIVE BIBLIOGRAPHY & SOURCE REGISTRY -->
+    <section class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">TRANSPARENCY &amp; OPEN SCIENCE</span>
+            <h2 class="section-title">Archival Research &amp; Primary Source Registry</h2>
+            <p class="section-desc">
+              All data, historical timelines, and planetary sensor feeds in this observatory are grounded in open scientific sources and verified international registries.
+            </p>
+          </div>
+        </div>
+
+        <div class="treaty-table-wrap">
+          <table class="treaty-table">
+            <thead>
+              <tr>
+                <th>Data Domain</th>
+                <th>Authoritative Source</th>
+                <th>Access Protocol / Endpoint</th>
+                <th>License / Verification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Doomsday Clock Official Settings</strong></td>
+                <td>Bulletin of the Atomic Scientists</td>
+                <td>Official Statement &amp; Press Archives (1947–2026)</td>
+                <td>Primary Archival Record</td>
+              </tr>
+              <tr>
+                <td><strong>Doomsday Clock Trajectory History</strong></td>
+                <td>Wikipedia Knowledge Graph / REST API</td>
+                <td><code>https://en.wikipedia.org/w/api.php?action=query</code></td>
+                <td>Creative Commons CC-BY-SA 4.0</td>
+              </tr>
+              <tr>
+                <td><strong>Cold War History &amp; TTAPS Model</strong></td>
+                <td>Encyclopaedia Britannica &amp; Science (1983)</td>
+                <td>Turco, Toon, Ackerman, Pollack &amp; Sagan (TTAPS) Papers</td>
+                <td>Peer-Reviewed Climatology</td>
+              </tr>
+              <tr>
+                <td><strong>Global Nuclear Warhead Inventories</strong></td>
+                <td>Federation of American Scientists (FAS) / SIPRI</td>
+                <td>FAS Nuclear Notebook &amp; SIPRI Yearbook 2025/2026</td>
+                <td>Verified Non-Proliferation Registry</td>
+              </tr>
+              <tr>
+                <td><strong>Live Seismic Hazards (M4.5+)</strong></td>
+                <td>USGS Earthquake Hazards Program</td>
+                <td>USGS ComCat 24h GeoJSON Real-Time Feed</td>
+                <td>US Government Public Domain</td>
+              </tr>
+              <tr>
+                <td><strong>Live Satellite Hazards (Fires, Storms)</strong></td>
+                <td>NASA Earth Science Division</td>
+                <td>NASA EONET v3 REST API (Earth Observatory)</td>
+                <td>NASA Open Data Policy</td>
+              </tr>
+              <tr>
+                <td><strong>Live Meteorological Telemetry</strong></td>
+                <td>Open-Meteo Weather Forecast API</td>
+                <td>DWD / NOAA Global Numerical Weather Models</td>
+                <td>Open Data / Non-Commercial Use</td>
+              </tr>
+              <tr>
+                <td><strong>Atmospheric CO₂ Baseline</strong></td>
+                <td>NOAA Global Monitoring Laboratory</td>
+                <td>Mauna Loa Observatory Atmospheric Sampling</td>
+                <td>NOAA Atmospheric Record</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-brand"><strong>DOOMSDAY CLOCK LIVE OBSERVATORY</strong></p>
+        <p class="footer-note" id="footer-citations"></p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Observatory</a>
+        <a href="intelligence.html">Live Feed</a>
+        <a href="map.html">Threat Map</a>
+        <a href="simulator.html">Simulators</a>
+        <a href="timeline.html">1947–2026 Archive</a>
+        <a href="about.html">Dossiers &amp; About</a>
+        <a href="#top">Back to Top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+</body>
+</html>
