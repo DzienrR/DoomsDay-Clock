@@ -818,56 +818,49 @@ function buildOfficialTimelineEntry(year, seconds, existingTime24, reason) {
   };
 }
 
-// Strategy 1: Parse Wikipedia Section 5 Timeline Table (Highest fidelity & structured)
-function parseWikipediaTimelineWikitext(wikitext) {
+// Strategy 1: Parse Wikipedia Section 5 Timeline Table HTML (Highest fidelity & structured)
+function parseWikipediaTimelineHTML(html) {
+  const domparser = new DOMParser();
+  const doc = domparser.parseFromString(html, "text/html");
+
   const currentLatest = TIMELINE_DATA[TIMELINE_DATA.length - 1];
-  const rows = wikitext.split("|-");
   let highestYear = currentLatest.year;
   let candidate = null;
 
-  for (const row of rows) {
-    const lines = row.split("\n").map((l) => l.trim()).filter(Boolean);
-    if (!lines.length || !lines[0].startsWith("|")) continue;
+  const tables = doc.querySelectorAll("table.wikitable");
+  if (!tables.length) return null;
 
-    const yearMatch = lines[0].match(/\|\s*(202[6-9]|203\d)\b/);
-    if (!yearMatch) continue;
+  const rows = tables[0].querySelectorAll("tr");
+  rows.forEach((row) => {
+    const cells = row.querySelectorAll("td");
+    if (cells.length < 5) return;
+
+    const yearMatch = cells[0].textContent.match(/(202[6-9]|203\d)/);
+    if (!yearMatch) return;
     const year = Number(yearMatch[1]);
-    if (year < highestYear) continue;
+    if (year < highestYear) return;
 
     let seconds = null;
     let time24 = null;
-    let reasonText = "";
 
-    for (const line of lines.slice(1)) {
-      if (/\[\[(?:File|Image):/i.test(line)) continue;
-
-      if (!seconds) {
-        const secMatch = line.match(/\((\d+)\s*s\)/i);
-        if (secMatch) {
-          seconds = Number(secMatch[1]);
-        } else {
-          const sortMatch = line.match(/data-sort-value=["']([\d.]+)["']/i);
-          if (sortMatch) {
-            seconds = Math.round(Number(sortMatch[1]) * 60);
-          }
-        }
-      }
-      if (!time24) {
-        const timeMatch = line.match(/\b(23:\d{2}:\d{2})\b/);
-        if (timeMatch) time24 = timeMatch[1];
-      }
-      if (line.includes("align=") || (line.startsWith("|") && line.length > 50 && !line.includes("data-sort-value"))) {
-        let clean = line.replace(/align=["']?\w+["']?\s*\|\s*/i, "");
-        clean = clean.replace(/<ref[^>]*>.*?<\/ref>/gis, "");
-        clean = clean.replace(/<ref[^>]*\/>/gi, "");
-        clean = clean.replace(/\[\[(?:[^|\]]+\|)?([^\]]+)\]\]/g, "$1");
-        clean = clean.replace(/\{\{[^}]+\}\}/g, "");
-        clean = clean.replace(/^\|\s*/, "").trim();
-        if (clean.length > 25 && !clean.includes("File:")) {
-          reasonText = clean;
-        }
+    const timeRemainingStr = cells[1].textContent.trim();
+    const sortVal = cells[1].getAttribute("data-sort-value");
+    if (sortVal && !isNaN(Number(sortVal))) {
+      seconds = Math.round(Number(sortVal) * 60);
+    } else {
+      const secMatch = timeRemainingStr.match(/\((\d+)\s*s\)/i);
+      if (secMatch) {
+        seconds = Number(secMatch[1]);
       }
     }
+
+    const time24Str = cells[2].textContent.trim();
+    const timeMatch = time24Str.match(/\b(23:\d{2}:\d{2})\b/);
+    if (timeMatch) {
+      time24 = timeMatch[1];
+    }
+
+    let reasonText = cells[4].textContent.trim().replace(/\[\d+\]/g, "");
 
     if (seconds && seconds > 0 && seconds <= 1800) {
       highestYear = year;
@@ -878,7 +871,7 @@ function parseWikipediaTimelineWikitext(wikitext) {
         reason: reasonText || `Official ${year} statement synchronized live from the Bulletin of the Atomic Scientists records.`
       };
     }
-  }
+  });
 
   if (candidate) {
     return buildOfficialTimelineEntry(candidate.year, candidate.seconds, candidate.time24, candidate.reason);
@@ -1009,7 +1002,7 @@ async function syncOfficialClockReading(isUserManualTrigger = false) {
       const tableParams = new URLSearchParams({
         action: "parse",
         page: "Doomsday_Clock",
-        prop: "wikitext",
+        prop: "text",
         section: "5",
         format: "json",
         origin: "*"
@@ -1018,13 +1011,13 @@ async function syncOfficialClockReading(isUserManualTrigger = false) {
       const tableRes = await fetch(tableUrl);
       if (tableRes.ok) {
         const tableData = await tableRes.json();
-        const wikitext = tableData?.parse?.wikitext?.["*"] || "";
-        if (wikitext) {
-          parsedEntry = parseWikipediaTimelineWikitext(wikitext);
+        const htmlText = tableData?.parse?.text?.["*"] || "";
+        if (htmlText) {
+          parsedEntry = parseWikipediaTimelineHTML(htmlText);
         }
       }
     } catch (e) {
-      console.warn("Wikitext table check failed, falling back to lead summary:", e);
+      console.warn("HTML table check failed, falling back to lead summary:", e);
     }
 
     // Strategy 2: Wikipedia Lead Extract (Fallback if table section moves)
