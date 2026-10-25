@@ -2,6 +2,20 @@
 
 All notable architectural, feature, and historical data updates to the **Doomsday Clock Live Observatory** are documented in this file.
 
+## [3.1.0] — 2026-10-26 — Jules Contribution Review & Security Hardening
+### Security
+- **DOM XSS Elimination (PR #2 & PR #12):** Fully sanitized external API feeds (NASA EONET events and USGS earthquake feeds) and user inputs in the Custom Geopolitical Scenario builder using entity escaping and safe native DOM element construction (`textContent`).
+### Accessibility & UX
+- **Keyboard Navigation (PR #3):** Added global `:focus-visible` outline styles adhering to the `--accent-blue` token for WCAG 2.1 keyboard accessibility compliance.
+- **Non-blocking UI Feedback (PR #6):** Replaced native blocking `alert()` notifications on failed clipboard copying with inline non-blocking button state indicators.
+### Code Health & Architecture
+- **Event Listener Modularization (PR #11):** Refactored the monolithic `bindEventListeners()` function in `app.js` into domain-specific modules (`bindTimelineEvents`, `bindClockEvents`, `bindIntelligenceEvents`, `bindSensorEvents`, `bindSimulatorEvents`).
+- **Endpoint Deduplication (PR #9):** Extracted duplicate USGS earthquake API endpoints into a shared `USGS_ENDPOINT` constant.
+- **Edge-Case Clock Arithmetic Fix (PR #4):** Fixed `format24HourTime(0)` to return `"00:00:00"` (midnight).
+### Testing
+- **Zero-Dependency Automated Test Suites (PR #1, #4, #5, #8, #10):** Integrated 29 automated unit tests across `app.test.js` and `features.test.js` using Node's native `node:test` runner, preserving zero external dependencies without npm lockfile bloat.
+
+
 ## [3.0.0] — 2026-10-25 — Multi-Page Observatory & World-Class Engineering Governance Suite
 ### Added
 - **Multi-Page Specialized Architecture:** Expanded the observatory into 6 dedicated HTML workspaces (`index.html`, `intelligence.html`, `map.html`, `simulator.html`, `timeline.html`, `about.html`) connected via a unified header navigation and portal hub.
