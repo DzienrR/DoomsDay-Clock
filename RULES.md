@@ -1,14 +1,12 @@
-# Engineering, Content & Algorithmic Rules (`RULES.md`)
+# Engineering, Content, Algorithmic & Living Legal Sync Rules (`RULES.md`)
 
-These rules govern both the engineering lifecycle and the **Mathematical Threat-to-Clock Ratio Algorithm (`ODC-LIVE v3.0`)** of the **Doomsday Clock Live Observatory**.
+These rules govern the engineering lifecycle, the **Mathematical Threat-to-Clock Ratio Algorithm (`ODC-LIVE v3.0`)**, and the **Mandatory Living Documentation & Legal Auto-Update Protocol** of the **Doomsday Clock Live Observatory**.
 
 ## Part 1: Mathematical Rules & Ratios for the Autonomous Live Doomsday Clock (`live-clock-engine.js`)
 
 While the Official Bulletin Doomsday Clock is set once a year in January (**85.00 seconds to midnight** as of January 2026), our **Observatory Live Autonomous Doomsday Clock (`ODC-LIVE`)** continuously analyzes real-time global data streams and moves forward (closer to midnight) and backward (toward safety) every 5 seconds according to the following mathematical rules:
 
 ### 1.1 Pillar Weights & Seconds-Per-Percentage Ratios
-
-The engine evaluates **4 Threat Pillars** (totalling `100%` of the Composite Threat Index, with `50%` representing the neutral equilibrium baseline) and **1 Diplomatic Counter-Force Pillar**:
 
 | Pillar | Weight in Composite Index | Neutral Baseline | Ratio per `1%` Shift | Impact of `+10%` Shift | Live Data Source |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -38,17 +36,18 @@ The engine evaluates **4 Threat Pillars** (totalling `100%` of the Composite Thr
 | **71% – 85%** | `SEVERE MULTI-FRONT CRISIS` | **−4.6s to −9.0s Closer to Midnight** | `76.00s – 80.40s` |
 | **86% – 100%** | `CRITICAL EXISTENTIAL ALERT` | **−9.1s to −15.0s Closer to Midnight** | `70.00s – 75.90s` |
 
-### 1.4 Individual Live Incident Scoring Rules ($\delta_{\text{incident}}$)
+## Part 2: Mandatory Living Documentation & Legal Auto-Update Rule (CRITICAL)
 
-- **High-Severity Nuclear / Military Escalation Headline:** `−0.48s` (moves clock closer to midnight)
-- **USGS Shallow Seismic Event (`< 10 km` depth, M4.5+):** `−0.35s` (moves clock closer)
-- **USGS Standard Tectonic Event (`>= 10 km` depth, M4.5+):** `−0.14s`
-- **NASA EONET Active Wildfire / Severe Storm / Volcanic Hazard:** `−0.24s` to `−0.30s`
-- **AI / Cyber / Biosecurity Risk Alert:** `−0.22s` to `−0.28s`
-- **Diplomatic Breakthrough / Ceasefire / Treaty Inspection / Clean Energy Milestone:** `+0.32s` to `+0.55s` (pulls clock BACK toward safety)
+Whenever any developer or AI coding agent adds, modifies, or removes a feature, simulator, API endpoint, map layer, or browser storage key on the website, they **MUST** perform the following **In-Place Living Update Check** before completing the task:
 
-## Part 2: Software Engineering & Quality Rules
+1. **Update In-Place (Never Duplicate):** Do NOT create duplicate About, Privacy Policy, Terms, or Disclaimer sections. Always update the existing sections in-place inside `about.html`, `legal.html`, and `LEGAL_COMPLIANCE.md`.
+2. **Feature-to-Policy Impact Matrix:**
+   - **Added/Changed an External API or CDN Script?** → Update the **Privacy Policy** table and **Source Registry** in `legal.html`, `LEGAL_COMPLIANCE.md`, `about.html`, and `SECURITY.md`.
+   - **Added/Changed a Simulator, Calculator, or Algorithmic Clock Rule?** → Update the **Disclaimers** (Simulation & Modeling Notice) in `legal.html` & `LEGAL_COMPLIANCE.md`, and update the **Methodology / Rulebook** section in `about.html` & `RULES.md`.
+   - **Added/Changed `localStorage`, Export Tools, or User Inputs?** → Update the **Privacy Policy** and **Terms & Conditions** in `legal.html` & `LEGAL_COMPLIANCE.md`.
+   - **Added/Changed Any Page or Navigation Link?** → Synchronize `<header class="site-header">` and `<footer class="site-footer">` across all 7 HTML pages (`index.html`, `intelligence.html`, `map.html`, `simulator.html`, `timeline.html`, `about.html`, `legal.html`) and record the update in `CHANGELOG.md`.
 
-1. **Cross-Page Synchronization:** Any change to shared headers, footers, or script imports must be synchronized across `index.html`, `intelligence.html`, `map.html`, `simulator.html`, `timeline.html`, and `about.html`.
-2. **Defensive DOM Hydration:** All scripts (`app.js`, `features.js`, `live-clock-engine.js`) must guard DOM lookups so pages only hydrate the containers present on that page.
-3. **Zero Unhandled Rejections:** Every external `fetch()` call must fall back gracefully to verified offline baseline data if rate-limited or offline.
+## Part 3: Software Engineering & Quality Rules
+
+1. **Defensive DOM Hydration:** All shared scripts (`app.js`, `features.js`, `live-clock-engine.js`) must guard DOM lookups (`if (!el) return;`) so pages only hydrate the containers present on that page.
+2. **Zero Unhandled Rejections:** Every external `fetch()` call must fall back gracefully to verified offline baseline data if rate-limited or offline.
