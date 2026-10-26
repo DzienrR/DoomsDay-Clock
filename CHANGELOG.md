@@ -11,11 +11,12 @@ All notable architectural, feature, and historical data updates to the **Doomsda
 ### Code Health & Architecture
 - **Event Listener Modularization (PR #11):** Refactored the monolithic `bindEventListeners()` function in `app.js` into domain-specific modules (`bindTimelineEvents`, `bindClockEvents`, `bindIntelligenceEvents`, `bindSensorEvents`, `bindSimulatorEvents`).
 - **Endpoint Deduplication (PR #9):** Extracted duplicate USGS earthquake API endpoints into a shared `USGS_ENDPOINT` constant.
+- **Wikipedia HTML DOMParser Refactoring (PR #14):** Replaced brittle wikitext regex parsing with structured HTML querying using native `DOMParser` via Wikipedia's `prop=text` API.
 - **Edge-Case Clock Arithmetic Fix (PR #4):** Fixed `format24HourTime(0)` to return `"00:00:00"` (midnight).
 ### Performance & Rendering
 - **DOM Batching with DocumentFragment (PR #13):** Batched repeated element insertions inside render loops for clock dial ticks, historical trajectory charts, timeline cards, and interactive world map elements using `DocumentFragment`, dramatically reducing style recalculations and layout thrashing.
 ### Testing
-- **Zero-Dependency Automated Test Suites (PR #1, #4, #5, #8, #10):** Integrated 29 automated unit tests across `app.test.js` and `features.test.js` using Node's native `node:test` runner, preserving zero external dependencies without npm lockfile bloat.
+- **Zero-Dependency Automated Test Suites (PR #1, #4, #5, #8, #10, #15):** Integrated 35 automated unit tests across `app.test.js` and `features.test.js` (including `toRad` angle boundary tests) using Node's native `node:test` runner, preserving zero external dependencies without npm lockfile bloat.
 
 
 ## [3.0.0] — 2026-10-25 — Multi-Page Observatory & World-Class Engineering Governance Suite
