@@ -489,6 +489,7 @@ function injectMapModeToolbar(svg) {
   let isDragging = false;
   let lastX = 0;
   let lastY = 0;
+  let dragRafId = null;
 
   svg.addEventListener("pointerdown", (e) => {
     if (e.target.closest(".map-node")) return;
@@ -509,11 +510,19 @@ function injectMapModeToolbar(svg) {
     if (mapProjectionMode === "3d") {
       globeRotation[0] += dx * 0.35;
       globeRotation[1] = Math.max(-75, Math.min(75, globeRotation[1] - dy * 0.35));
-      drawWorldMap(activeMapLayer);
     } else if (mapZoomTransform.k > 1) {
       mapZoomTransform.x += dx;
       mapZoomTransform.y += dy;
-      drawWorldMap(activeMapLayer);
+    } else {
+      return;
+    }
+
+    if (!dragRafId) {
+      dragRafId = requestAnimationFrame(() => {
+        // Bolt: Throttled rendering of the SVG map layout during dragging
+        drawWorldMap(activeMapLayer);
+        dragRafId = null;
+      });
     }
   });
 
