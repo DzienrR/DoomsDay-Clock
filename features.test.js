@@ -12,7 +12,7 @@ global.document = {
 };
 
 // Now require the module under test
-const { projectLatLon, computeGreatCircleDistance } = require('./features.js');
+const { projectLatLon, toRad, computeGreatCircleDistance } = require('./features.js');
 
 test('projectLatLon mapping tests', async (t) => {
   await t.test('center of the map (Equator / Prime Meridian)', () => {
@@ -94,5 +94,23 @@ test('computeGreatCircleDistance tests', async (t) => {
     const dist1 = computeGreatCircleDistance(40.7, -74.0, 51.5, -0.1);
     const dist2 = computeGreatCircleDistance(51.5, -0.1, 40.7, -74.0);
     assert.strictEqual(dist1, dist2);
+  });
+});
+
+test('toRad tests', async (t) => {
+  await t.test('0 degrees', () => {
+    assert.strictEqual(toRad(0), 0);
+  });
+  await t.test('90 degrees', () => {
+    assert.ok(Math.abs(toRad(90) - Math.PI / 2) < 0.0001);
+  });
+  await t.test('180 degrees', () => {
+    assert.ok(Math.abs(toRad(180) - Math.PI) < 0.0001);
+  });
+  await t.test('360 degrees', () => {
+    assert.ok(Math.abs(toRad(360) - 2 * Math.PI) < 0.0001);
+  });
+  await t.test('-90 degrees', () => {
+    assert.ok(Math.abs(toRad(-90) - (-Math.PI / 2)) < 0.0001);
   });
 });
