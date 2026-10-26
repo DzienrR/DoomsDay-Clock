@@ -166,6 +166,43 @@
       </div>
     </section>
 
+    <!-- SECTION: LIVE GEOSPATIAL THREAT MAP & 3D GLOBE -->
+    <section id="intel-map-section" class="section-block section-alt">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">REAL-TIME GEOSPATIAL SURVEILLANCE</span>
+            <h2 class="section-title">Live World Threat Map &amp; Interactive 3D Globe</h2>
+            <p class="section-desc">
+              Switch between the <strong>Real 2D World Map</strong> (Natural Earth 110m country borders) and the <strong>Interactive 3D Globe</strong> to inspect nuclear-armed states, 2026 conflict flashpoints, and live USGS/NASA hazard coordinates.
+            </p>
+          </div>
+          <div class="filter-pill-group" role="group" aria-label="Map Layer Filters">
+            <button class="tl-filter-btn active" data-map-layer="all" type="button">All Layers</button>
+            <button class="tl-filter-btn" data-map-layer="nuclear" type="button">⚛️ Nuclear States</button>
+            <button class="tl-filter-btn" data-map-layer="flashpoint" type="button">⚡ 2026 Flashpoints</button>
+            <button class="tl-filter-btn" data-map-layer="live" type="button">🌊 Live USGS Seismic</button>
+            <button class="tl-filter-btn" data-map-layer="climate" type="button">🌡️ NASA Hazards</button>
+          </div>
+        </div>
+
+        <div class="map-stage-grid">
+          <div class="map-canvas-card">
+            <svg id="world-threat-map" viewBox="0 0 1000 500" role="img" aria-label="Interactive Real World Threat Map and 3D Globe"></svg>
+          </div>
+          <div class="map-inspector-card" id="map-inspector-card">
+            <span class="section-kicker mono" id="map-insp-type">SELECT ANY COUNTRY OR MARKER</span>
+            <h3 id="map-insp-title">Live Geospatial Risk Dossier</h3>
+            <div class="map-insp-stat" id="map-insp-stat">177 Countries • 9 Nuclear States • Live Sensors</div>
+            <p id="map-insp-desc">
+              Click any red/amber highlighted country or pulsing telemetry marker on the World Map or 3D Globe to inspect its nuclear stockpile, treaty status, or live USGS/NASA anomaly coordinates.
+            </p>
+            <div id="map-insp-meta" class="map-insp-meta"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- SECTION: PLANETARY SENSORS -->
     <section id="earth-telemetry" class="section-block">
       <div class="container">
@@ -241,5 +278,6 @@
 
   <script src="app.js"></script>
   <script src="features.js"></script>
+  <script src="live-clock-engine.js"></script>
 </body>
 </html>

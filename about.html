@@ -157,6 +157,186 @@
       </div>
     </section>
 
+    <!-- SECTION 2.5: ABOUT THIS OBSERVATORY & OUR DUAL-CLOCK ALGORITHMIC ENGINE (ODC-LIVE v3.0) -->
+    <section id="about-observatory-engine" class="section-block">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-kicker">ABOUT THIS OBSERVATORY &amp; DUAL-CLOCK ARCHITECTURE</span>
+            <h2 class="section-title">Why We Built This Platform &amp; How Our Autonomous Live Clock Works</h2>
+            <p class="section-desc">
+              While the official Doomsday Clock is updated once a year in January by the Bulletin of the Atomic Scientists (currently set at <strong>85 seconds to midnight</strong>), global nuclear, climate, AI, and biosecurity events unfold every hour. We built this observatory to bridge that gap with a <strong>Dual-Clock Architecture</strong> and a <strong>Local-First Hybrid Engine</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- 4 Core Mission Goals -->
+        <div class="era-matrix-grid" style="margin-bottom: 2rem;">
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #ff3b30;">MISSION 01</span>
+              <span class="status-pill status-critical">24×7 Visibility</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">Make Invisible Global Risks Visible</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              Connect the symbolic Clock reading to real-time satellite natural hazards (NASA EONET v3), global seismic/test-zone detections (USGS M4.5+), and live geopolitical developments mapped across 177 real country borders and an interactive 3D Globe.
+            </p>
+          </div>
+
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #38bdf8;">MISSION 02</span>
+              <span class="status-pill status-high">Dual-Clock Engine</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">Pair Annual Consensus with Live Telemetry</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              Preserve the Bulletin's official annual setting (<strong>85.00s</strong>) untouched while running a second, independent <strong>Autonomous Live Data-Driven Clock (ODC-LIVE v3.0)</strong> that moves forward and backward in real time as global crises and peace signals occur.
+            </p>
+          </div>
+
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #34d399;">MISSION 03</span>
+              <span class="status-pill status-safe">Agency Over Fear</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">Turn Anxiety Into Informed Action</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              Demonstrate through 79 years of historical proof (such as the 1963 Partial Test Ban and 1991 START I treaty that pushed the Clock back to 17 minutes) and interactive simulators that human diplomacy and clean-energy transitions can turn back the Clock.
+            </p>
+          </div>
+
+          <div class="era-card">
+            <div class="era-card-header">
+              <span class="mono" style="color: #a855f7;">MISSION 04</span>
+              <span class="status-pill status-elevated">Hybrid Resilience</span>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">100% Independent + Live Connected</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              Engineered with a zero-dependency Local-First Hybrid Architecture: the site syncs live with Wikipedia, NASA, USGS, and Open-Meteo APIs when online, and falls back seamlessly to its built-in verified 1947–2026 database if offline.
+            </p>
+          </div>
+        </div>
+
+        <!-- Mathematical Rulebook & Threat Ratio Tables for ODC-LIVE v3.0 -->
+        <div class="chart-card" style="margin-bottom: 1rem;">
+          <div class="chart-header" style="margin-bottom: 0.85rem;">
+            <div>
+              <span class="section-kicker">ODC-LIVE v3.0 MATHEMATICAL SPECIFICATION</span>
+              <h3 style="font-size: 1.25rem;">Autonomous Live Doomsday Clock — Pillar Weights, Ratios &amp; Threat Tiers</h3>
+              <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Our custom Autonomous Clock uses the official <strong>85.00s</strong> reading as its <strong>50% Neutral Equilibrium Baseline</strong> and recalculates every 5 seconds using the following formula:
+                <code class="mono" style="color: #38bdf8;">T_live = 85.00s − 0.120(T_N − 50) − 0.075(T_C − 50) − 0.060(T_A − 50) − 0.045(T_B − 50) + 0.150(D_P − 35) + δ_incident</code>
+              </p>
+            </div>
+          </div>
+
+          <div class="sensors-grid">
+            <div class="treaty-table-wrap">
+              <table class="treaty-table">
+                <thead>
+                  <tr>
+                    <th>PILLAR</th>
+                    <th>WEIGHT</th>
+                    <th>1% RATIO</th>
+                    <th>+10% SHIFT</th>
+                    <th>LIVE TELEMETRY INPUTS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>☢️ Nuclear &amp; Conflict ($T_N$)</strong></td>
+                    <td class="mono">40%</td>
+                    <td class="mono accent-text">−0.120s / 1%</td>
+                    <td class="mono accent-text">−1.20s Closer</td>
+                    <td>Live conflict headlines + USGS shallow (&lt;10km) seismic events</td>
+                  </tr>
+                  <tr>
+                    <td><strong>🌡️ Climate &amp; Hazards ($T_C$)</strong></td>
+                    <td class="mono">25%</td>
+                    <td class="mono accent-text">−0.075s / 1%</td>
+                    <td class="mono accent-text">−0.75s Closer</td>
+                    <td>NASA EONET v3 wildfires/storms + Open-Meteo + CO₂ baseline</td>
+                  </tr>
+                  <tr>
+                    <td><strong>🤖 AI &amp; Cyber ($T_A$)</strong></td>
+                    <td class="mono">20%</td>
+                    <td class="mono accent-text">−0.060s / 1%</td>
+                    <td class="mono accent-text">−0.60s Closer</td>
+                    <td>Autonomous weapons, cyber operations &amp; synthetic disinformation</td>
+                  </tr>
+                  <tr>
+                    <td><strong>🧬 Biosecurity ($T_B$)</strong></td>
+                    <td class="mono">15%</td>
+                    <td class="mono accent-text">−0.045s / 1%</td>
+                    <td class="mono accent-text">−0.45s Closer</td>
+                    <td>Global pathogen surveillance, outbreaks &amp; lab oversight alerts</td>
+                  </tr>
+                  <tr>
+                    <td><strong>🕊️ Diplomacy &amp; Peace ($D_P$)</strong></td>
+                    <td class="mono">+25% Counter</td>
+                    <td class="mono" style="color: #34d399;">+0.150s / 1%</td>
+                    <td class="mono" style="color: #34d399;">+1.50s Safer (Back)</td>
+                    <td>Peace talks, IAEA inspections, ceasefires &amp; &gt;40% clean energy</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="treaty-table-wrap">
+              <table class="treaty-table">
+                <thead>
+                  <tr>
+                    <th>COMPOSITE THREAT %</th>
+                    <th>RISK TIER</th>
+                    <th>NET SHIFT FROM 85.00s</th>
+                    <th>CLOCK RANGE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="mono"><strong>0% – 25%</strong></td>
+                    <td><span class="status-pill status-safe">LOW / DE-ESCALATION</span></td>
+                    <td class="mono" style="color: #34d399;">+4.0s to +12.0s Safer</td>
+                    <td class="mono">89.00s – 97.00s</td>
+                  </tr>
+                  <tr>
+                    <td class="mono"><strong>26% – 49%</strong></td>
+                    <td><span class="status-pill status-safe">MODERATE / STABILIZING</span></td>
+                    <td class="mono" style="color: #34d399;">+0.5s to +3.9s Safer</td>
+                    <td class="mono">85.50s – 88.90s</td>
+                  </tr>
+                  <tr>
+                    <td class="mono"><strong>50.0%</strong></td>
+                    <td><span class="status-pill status-high">EQUILIBRIUM BASELINE</span></td>
+                    <td class="mono">0.0s (Official Setting)</td>
+                    <td class="mono">85.00s</td>
+                  </tr>
+                  <tr>
+                    <td class="mono"><strong>51% – 70%</strong></td>
+                    <td><span class="status-pill status-high">ELEVATED TENSION</span></td>
+                    <td class="mono accent-text">−0.5s to −4.5s Closer</td>
+                    <td class="mono">80.50s – 84.50s</td>
+                  </tr>
+                  <tr>
+                    <td class="mono"><strong>71% – 85%</strong></td>
+                    <td><span class="status-pill status-critical">SEVERE MULTI-FRONT CRISIS</span></td>
+                    <td class="mono accent-text">−4.6s to −9.0s Closer</td>
+                    <td class="mono">76.00s – 80.40s</td>
+                  </tr>
+                  <tr>
+                    <td class="mono"><strong>86% – 100%</strong></td>
+                    <td><span class="status-pill status-critical">CRITICAL EXISTENTIAL ALERT</span></td>
+                    <td class="mono accent-text">−9.1s to −15.0s Closer</td>
+                    <td class="mono">70.00s – 75.90s</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- SECTION 3: CULTURAL HISTORY & ICONOGRAPHY -->
     <section class="section-block">
       <div class="container">
@@ -290,5 +470,6 @@
 
   <script src="app.js"></script>
   <script src="features.js"></script>
+  <script src="live-clock-engine.js"></script>
 </body>
 </html>
