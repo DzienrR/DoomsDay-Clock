@@ -418,7 +418,7 @@ function injectMapModeToolbar(svg) {
       <button type="button" class="map-ctrl-btn hidden" id="globe-spin-btn" title="Toggle 3D Globe Auto-Rotation" aria-label="Toggle 3D Globe Auto-Rotation">↻ Auto-Spin: Off</button>
       <button type="button" class="map-ctrl-btn" id="map-zoom-in-btn" title="Zoom In" aria-label="Zoom In">＋</button>
       <button type="button" class="map-ctrl-btn" id="map-zoom-out-btn" title="Zoom Out" aria-label="Zoom Out">－</button>
-      <button type="button" class="map-ctrl-btn" id="map-reset-view-btn" title="Reset Map / Globe View" aria-label="Reset Map or Globe View">⟲ Reset</button>
+      <button type="button" class="map-ctrl-btn" id="map-reset-view-btn" title="Reset Map / Globe View" aria-label="Reset Map or Globe View"><span aria-hidden="true">⟲</span> Reset</button>
     </div>
   `;
   parent.insertBefore(toolbar, svg);
