@@ -272,14 +272,286 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================================================================
 // MODULE 1 & 2: INTERACTIVE GLOBAL THREAT MAP & PLANETARY GAUGES
 // ============================================================================
+// ============================================================================
+// MODULE 1 & 2: REAL OPEN-SOURCE WORLD MAP (NATURAL EARTH 110M) & 3D INTERACTIVE GLOBE
+// Powered by D3-Geo (d3@7) + TopoJSON (topojson-client@3) + Natural Earth (world-atlas@2)
+// ============================================================================
+
+let worldAtlasFeatures = null;
+let d3ReadyPromise = null;
+let mapProjectionMode = "2d"; // "2d" (Natural Earth Real Map) | "3d" (Interactive 3D Orthographic Globe)
+let globeRotation = [-25, -18, 0]; // Centered to show Europe, Middle East, India, Asia & Americas clearly
+let globeScale = 225;
+let mapZoomTransform = { k: 1, x: 0, y: 0 };
+let globeAutoRotate = false;
+let globeAnimFrame = null;
+let activeMissileArc = {
+  from: [-77.0, 38.9],
+  to: [37.6, 55.75],
+  label: "Strategic Watch Corridor"
+};
+
+// ISO-3166-1 numeric country codes in Natural Earth world-atlas@2/countries-110m.json
+const COUNTRY_RISK_INDEX = {
+  "840": { nodeId: "usa", level: "nuclear", name: "United States" },
+  "643": { nodeId: "rus", level: "nuclear", name: "Russia" },
+  "156": { nodeId: "chn", level: "nuclear", name: "China" },
+  "250": { nodeId: "fra", level: "nuclear", name: "France" },
+  "826": { nodeId: "gbr", level: "nuclear", name: "United Kingdom" },
+  "356": { nodeId: "ind", level: "nuclear", name: "India" },
+  "586": { nodeId: "pak", level: "nuclear", name: "Pakistan" },
+  "376": { nodeId: "isr", level: "nuclear", name: "Israel" },
+  "408": { nodeId: "prk", level: "nuclear", name: "North Korea" },
+  "804": { nodeId: "fp-ukraine", level: "flashpoint", name: "Ukraine" },
+  "364": { nodeId: "fp-mideast", level: "flashpoint", name: "Iran" },
+  "760": { nodeId: "fp-mideast", level: "flashpoint", name: "Syria" },
+  "887": { nodeId: "fp-mideast", level: "flashpoint", name: "Yemen" },
+  "304": { nodeId: "fp-arctic", level: "climate", name: "Greenland (Arctic Cryosphere)" }
+};
+
+// Climate stress nodes for the "climate" filter button on map.html
+const CLIMATE_STRESS_NODES = [
+  {
+    id: "clim-arctic",
+    name: "Arctic Sea-Ice & Permafrost Zone",
+    lat: 76.5,
+    lon: -42.0,
+    layer: "climate",
+    warheads: 0,
+    firstTest: "+3.8°C Regional Anomaly",
+    status: "CRYOSPHERE TIPPING WATCH",
+    desc: "Arctic amplification is warming polar latitudes nearly 4x faster than the global average, accelerating Greenland ice sheet melt and permafrost methane release."
+  },
+  {
+    id: "clim-amazon",
+    name: "Amazon Basin Dieback & Drought Corridor",
+    lat: -5.2,
+    lon: -62.0,
+    layer: "climate",
+    warheads: 0,
+    firstTest: "Severe Hydrological Stress",
+    status: "CARBON SINK RISK",
+    desc: "Recurring multi-year droughts and deforestation threaten to flip parts of the Amazon rainforest from a net carbon sink into a carbon source."
+  },
+  {
+    id: "clim-indo-gangetic",
+    name: "South Asian Wet-Bulb Heat Corridor",
+    lat: 26.8,
+    lon: 80.9,
+    layer: "climate",
+    warheads: 0,
+    firstTest: "+1.5°C Threshold Exceeded",
+    status: "EXTREME HEATWAVE WATCH",
+    desc: "High-density agricultural and urban corridor facing intensifying pre-monsoon heatwaves, glacial river variability, and food-security pressure."
+  }
+];
+
+function loadExternalScript(url) {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${url}"]`);
+    if (existing) {
+      if (existing.dataset.loaded === "true") return resolve();
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", (e) => reject(e));
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = url;
+    s.async = true;
+    s.addEventListener("load", () => {
+      s.dataset.loaded = "true";
+      resolve();
+    });
+    s.addEventListener("error", (e) => reject(e));
+    document.head.appendChild(s);
+  });
+}
+
+async function ensureCartographyEngine() {
+  if (worldAtlasFeatures && window.d3 && window.topojson) return true;
+  if (!d3ReadyPromise) {
+    d3ReadyPromise = (async () => {
+      const cdnBase = ["https://cdn.jsdelivr.net", "npm"].join("/");
+      await Promise.all([
+        window.d3 ? Promise.resolve() : loadExternalScript(`${cdnBase}/d3@7/dist/d3.min.js`),
+        window.topojson
+          ? Promise.resolve()
+          : loadExternalScript(`${cdnBase}/topojson-client@3/dist/topojson-client.min.js`)
+      ]);
+      const topoRes = await fetch(`${cdnBase}/world-atlas@2/countries-110m.json`);
+      if (!topoRes.ok) throw new Error("Failed to load world-atlas countries-110m.json");
+      const topoData = await topoRes.json();
+      worldAtlasFeatures = window.topojson.feature(
+        topoData,
+        topoData.objects.countries
+      ).features;
+      return true;
+    })();
+  }
+  return d3ReadyPromise;
+}
+
 function projectLatLon(lat, lon) {
+  if (typeof window !== "undefined" && window.d3 && currentActiveProjection) {
+    const pt = currentActiveProjection([lon, lat]);
+    if (pt) return { x: pt[0], y: pt[1], visible: true };
+  }
   const x = ((lon + 180) / 360) * 1000;
   const y = ((90 - lat) / 180) * 500;
-  return { x, y };
+  return { x, y, visible: true };
+}
+
+let currentActiveProjection = null;
+
+function injectMapModeToolbar(svg) {
+  const parent = svg.parentElement;
+  if (!parent || parent.querySelector(".map-engine-toolbar")) return;
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "map-engine-toolbar";
+  toolbar.innerHTML = `
+    <div class="map-mode-switch" role="group" aria-label="Switch between 2D World Map and 3D Interactive Globe">
+      <button type="button" class="map-mode-btn active" data-proj-mode="2d">🗺️ Real 2D World Map</button>
+      <button type="button" class="map-mode-btn" data-proj-mode="3d">🌐 Interactive 3D Globe</button>
+    </div>
+    <div class="map-nav-controls">
+      <button type="button" class="map-ctrl-btn hidden" id="globe-spin-btn" title="Toggle 3D Globe Auto-Rotation" aria-label="Toggle 3D Globe Auto-Rotation">↻ Auto-Spin: Off</button>
+      <button type="button" class="map-ctrl-btn" id="map-zoom-in-btn" title="Zoom In" aria-label="Zoom In">＋</button>
+      <button type="button" class="map-ctrl-btn" id="map-zoom-out-btn" title="Zoom Out" aria-label="Zoom Out">－</button>
+      <button type="button" class="map-ctrl-btn" id="map-reset-view-btn" title="Reset Map / Globe View" aria-label="Reset Map or Globe View">⟲ Reset</button>
+    </div>
+  `;
+  parent.insertBefore(toolbar, svg);
+
+  // Legend bar below SVG
+  const legend = document.createElement("div");
+  legend.className = "map-legend-bar mono";
+  legend.innerHTML = `
+    <span><i class="legend-swatch swatch-nuclear"></i> Nuclear-Armed States (9)</span>
+    <span><i class="legend-swatch swatch-flashpoint"></i> 2026 Conflict Flashpoints</span>
+    <span><i class="legend-swatch swatch-seismic"></i> Live USGS M4.5+ &amp; NASA Hazards</span>
+    <span><i class="legend-swatch swatch-climate"></i> Climate Tipping Zones</span>
+    <span class="map-drag-hint">💡 Drag to rotate/pan • Scroll to zoom • Click any country or marker</span>
+  `;
+  parent.appendChild(legend);
+
+  toolbar.querySelectorAll("[data-proj-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      toolbar.querySelectorAll("[data-proj-mode]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      mapProjectionMode = btn.dataset.projMode || "2d";
+      const spinBtn = document.getElementById("globe-spin-btn");
+      if (mapProjectionMode === "3d") {
+        spinBtn?.classList.remove("hidden");
+        toggleGlobeAutoSpin(true);
+      } else {
+        spinBtn?.classList.add("hidden");
+        toggleGlobeAutoSpin(false);
+      }
+      drawWorldMap(activeMapLayer);
+    });
+  });
+
+  document.getElementById("globe-spin-btn")?.addEventListener("click", () => {
+    toggleGlobeAutoSpin(!globeAutoRotate);
+  });
+
+  document.getElementById("map-zoom-in-btn")?.addEventListener("click", () => {
+    if (mapProjectionMode === "3d") {
+      globeScale = Math.min(460, globeScale * 1.22);
+    } else {
+      mapZoomTransform.k = Math.min(5, mapZoomTransform.k * 1.3);
+    }
+    drawWorldMap(activeMapLayer);
+  });
+
+  document.getElementById("map-zoom-out-btn")?.addEventListener("click", () => {
+    if (mapProjectionMode === "3d") {
+      globeScale = Math.max(150, globeScale / 1.22);
+    } else {
+      mapZoomTransform.k = Math.max(1, mapZoomTransform.k / 1.3);
+      if (mapZoomTransform.k === 1) {
+        mapZoomTransform.x = 0;
+        mapZoomTransform.y = 0;
+      }
+    }
+    drawWorldMap(activeMapLayer);
+  });
+
+  document.getElementById("map-reset-view-btn")?.addEventListener("click", () => {
+    globeRotation = [-25, -18, 0];
+    globeScale = 225;
+    mapZoomTransform = { k: 1, x: 0, y: 0 };
+    drawWorldMap(activeMapLayer);
+  });
+
+  // Pointer drag interaction for rotating 3D Globe or panning 2D Map
+  let isDragging = false;
+  let lastX = 0;
+  let lastY = 0;
+
+  svg.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".map-node")) return;
+    isDragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    svg.style.cursor = "grabbing";
+    if (globeAutoRotate) toggleGlobeAutoSpin(false);
+  });
+
+  window.addEventListener("pointermove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+
+    if (mapProjectionMode === "3d") {
+      globeRotation[0] += dx * 0.35;
+      globeRotation[1] = Math.max(-75, Math.min(75, globeRotation[1] - dy * 0.35));
+      drawWorldMap(activeMapLayer);
+    } else if (mapZoomTransform.k > 1) {
+      mapZoomTransform.x += dx;
+      mapZoomTransform.y += dy;
+      drawWorldMap(activeMapLayer);
+    }
+  });
+
+  window.addEventListener("pointerup", () => {
+    if (isDragging) {
+      isDragging = false;
+      svg.style.cursor = "grab";
+    }
+  });
+}
+
+function toggleGlobeAutoSpin(enable) {
+  globeAutoRotate = enable;
+  const spinBtn = document.getElementById("globe-spin-btn");
+  if (spinBtn) {
+    spinBtn.textContent = globeAutoRotate ? "⏸ Auto-Spin: On" : "↻ Auto-Spin: Off";
+    spinBtn.classList.toggle("active", globeAutoRotate);
+  }
+  if (globeAnimFrame) {
+    cancelAnimationFrame(globeAnimFrame);
+    globeAnimFrame = null;
+  }
+  if (globeAutoRotate && mapProjectionMode === "3d") {
+    const step = () => {
+      if (!globeAutoRotate || mapProjectionMode !== "3d") return;
+      globeRotation[0] = (globeRotation[0] + 0.25) % 360;
+      drawWorldMap(activeMapLayer);
+      globeAnimFrame = requestAnimationFrame(step);
+    };
+    globeAnimFrame = requestAnimationFrame(step);
+  }
 }
 
 function initWorldThreatMap() {
-  drawWorldMap("all");
+  const svg = document.getElementById("world-threat-map");
+  if (!svg) return;
+  svg.style.cursor = "grab";
+  injectMapModeToolbar(svg);
 
   document.querySelectorAll("[data-map-layer]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -290,105 +562,311 @@ function initWorldThreatMap() {
     });
   });
 
-  // Fetch live USGS points to overlay on the map
+  // Load D3 + TopoJSON + Natural Earth 110m countries, then draw
+  ensureCartographyEngine()
+    .then(() => {
+      drawWorldMap(activeMapLayer);
+    })
+    .catch(() => {
+      drawWorldMap(activeMapLayer);
+    });
+
+  // Fetch live USGS & NASA EONET points to overlay on the map
   fetchLiveMapOverlay();
 }
 
 async function fetchLiveMapOverlay() {
+  const combinedLive = [];
+  // 1. Live USGS M4.5+ Earthquakes
   try {
-    const usgsEndpoint = [
-      "https://earthquake.usgs.gov",
-      "earthquakes",
-      "feed",
-      "v1.0",
-      "summary",
-      "4.5_day.geojson"
-    ].join("/");
-    const res = await fetch(usgsEndpoint);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data.features)) {
-      liveMapMarkers = data.features.slice(0, 12).map((f, idx) => ({
-        id: `usgs-${idx}`,
-        name: `Live Seismic Event: M${Number(f.properties.mag).toFixed(1)}`,
-        lat: Number(f.geometry.coordinates[1]),
-        lon: Number(f.geometry.coordinates[0]),
-        layer: "live",
-        warheads: 0,
-        firstTest: new Date(f.properties.time).toISOString().substring(0, 19) + " UTC",
-        status: `Depth: ${Number(f.geometry.coordinates[2]).toFixed(1)} km`,
-        desc: `Real-time USGS seismic detection at ${f.properties.place}. Global seismic networks verify both natural tectonic activity and underground nuclear test compliance.`
-      }));
-      drawWorldMap(activeMapLayer);
+    const usgsUrl =
+      typeof USGS_ENDPOINT !== "undefined"
+        ? USGS_ENDPOINT
+        : [
+            "https://earthquake.usgs.gov",
+            "earthquakes",
+            "feed",
+            "v1.0",
+            "summary",
+            "4.5_day.geojson"
+          ].join("/");
+    const res = await fetch(usgsUrl);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.features)) {
+        data.features.slice(0, 14).forEach((f, idx) => {
+          combinedLive.push({
+            id: `usgs-${idx}`,
+            name: `Live Seismic: M${Number(f.properties.mag).toFixed(1)}`,
+            lat: Number(f.geometry.coordinates[1]),
+            lon: Number(f.geometry.coordinates[0]),
+            layer: "live",
+            warheads: 0,
+            firstTest: new Date(f.properties.time).toISOString().substring(0, 19) + " UTC",
+            status: `Depth: ${Number(f.geometry.coordinates[2]).toFixed(1)} km`,
+            desc: `Real-time USGS seismic detection at ${(f.properties.place || "").replace(
+              /[&<>"']/g,
+              ""
+            )}. Global seismic stations verify both natural tectonic events and underground nuclear test-ban compliance.`
+          });
+        });
+      }
     }
-  } catch (e) {
-    // Keep static strategic nodes if offline
+  } catch (e) {}
+
+  // 2. Live NASA EONET Natural Hazards
+  try {
+    const nasaUrl = ["https://eonet.gsfc.nasa.gov", "api", "v3", "events"].join("/") + "?status=open&limit=10";
+    const res = await fetch(nasaUrl);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.events)) {
+        data.events.slice(0, 8).forEach((ev, idx) => {
+          const geo = ev.geometry?.[ev.geometry.length - 1];
+          if (geo && Array.isArray(geo.coordinates) && typeof geo.coordinates[0] === "number") {
+            combinedLive.push({
+              id: `nasa-${idx}`,
+              name: `NASA Satellite Alert: ${ev.title}`,
+              lat: Number(geo.coordinates[1]),
+              lon: Number(geo.coordinates[0]),
+              layer: "climate",
+              warheads: 0,
+              firstTest: (geo.date || "").substring(0, 10) || "Active Satellite Track",
+              status: ev.categories?.[0]?.title || "Planetary Hazard",
+              desc: `Active planetary anomaly tracked by NASA Earth Observatory (EONET v3) at ${Number(
+                geo.coordinates[1]
+              ).toFixed(2)}°, ${Number(geo.coordinates[0]).toFixed(2)}°.`
+            });
+          }
+        });
+      }
+    }
+  } catch (e) {}
+
+  if (combinedLive.length > 0) {
+    liveMapMarkers = combinedLive;
+    drawWorldMap(activeMapLayer);
   }
 }
 
-function drawWorldMap(layerFilter) {
+function drawWorldMap(layerFilter = "all") {
   const svg = document.getElementById("world-threat-map");
   if (!svg) return;
   svg.innerHTML = "";
 
-  // Graticule grid
-  for (let lon = -150; lon <= 150; lon += 30) {
-    const { x } = projectLatLon(0, lon);
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", x.toFixed(1));
-    line.setAttribute("y1", "0");
-    line.setAttribute("x2", x.toFixed(1));
-    line.setAttribute("y2", "500");
-    line.setAttribute("stroke", "rgba(255,255,255,0.04)");
-    svg.appendChild(line);
+  const width = 1000;
+  const height = 500;
+  const fragment = document.createDocumentFragment();
+
+  // Defs for ocean/globe gradients and tactical glow
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  defs.innerHTML = `
+    <radialGradient id="globeOceanGrad" cx="42%" cy="38%" r="60%">
+      <stop offset="0%" stop-color="#111c33" />
+      <stop offset="70%" stop-color="#080d1a" />
+      <stop offset="100%" stop-color="#04070f" />
+    </radialGradient>
+    <radialGradient id="globeAtmosGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="82%" stop-color="rgba(56, 189, 248, 0)" />
+      <stop offset="96%" stop-color="rgba(255, 59, 48, 0.22)" />
+      <stop offset="100%" stop-color="rgba(56, 189, 248, 0)" />
+    </radialGradient>
+  `;
+  fragment.appendChild(defs);
+
+  const rootG = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  if (mapProjectionMode === "2d" && (mapZoomTransform.k !== 1 || mapZoomTransform.x !== 0 || mapZoomTransform.y !== 0)) {
+    const cx = width / 2;
+    const cy = height / 2;
+    rootG.setAttribute(
+      "transform",
+      `translate(${cx + mapZoomTransform.x}, ${cy + mapZoomTransform.y}) scale(${mapZoomTransform.k}) translate(${-cx}, ${-cy})`
+    );
   }
-  for (let lat = -60; lat <= 60; lat += 30) {
-    const { y } = projectLatLon(lat, 0);
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", "0");
-    line.setAttribute("y1", y.toFixed(1));
-    line.setAttribute("x2", "1000");
-    line.setAttribute("y2", y.toFixed(1));
-    line.setAttribute("stroke", lat === 0 ? "rgba(56,189,248,0.14)" : "rgba(255,255,255,0.04)");
-    svg.appendChild(line);
+  fragment.appendChild(rootG);
+
+  const hasD3 = Boolean(window.d3 && worldAtlasFeatures);
+
+  if (hasD3) {
+    const d3 = window.d3;
+    const projection =
+      mapProjectionMode === "3d"
+        ? d3
+            .geoOrthographic()
+            .scale(globeScale)
+            .translate([width / 2, height / 2])
+            .rotate(globeRotation)
+            .clipAngle(90)
+        : (d3.geoNaturalEarth1 ? d3.geoNaturalEarth1() : d3.geoEquirectangular())
+            .scale(162)
+            .translate([width / 2, height / 2 + 12]);
+
+    currentActiveProjection = projection;
+    const pathGen = d3.geoPath().projection(projection);
+
+    // 1. Ocean Sphere / Background
+    if (mapProjectionMode === "3d") {
+      const atmos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      atmos.setAttribute("cx", String(width / 2));
+      atmos.setAttribute("cy", String(height / 2));
+      atmos.setAttribute("r", String(globeScale + 18));
+      atmos.setAttribute("fill", "url(#globeAtmosGlow)");
+      rootG.appendChild(atmos);
+
+      const sphere = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      sphere.setAttribute("d", pathGen({ type: "Sphere" }) || "");
+      sphere.setAttribute("fill", "url(#globeOceanGrad)");
+      sphere.setAttribute("stroke", "rgba(56, 189, 248, 0.35)");
+      sphere.setAttribute("stroke-width", "1.5");
+      rootG.appendChild(sphere);
+    } else {
+      const sphere = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      sphere.setAttribute("d", pathGen({ type: "Sphere" }) || "");
+      sphere.setAttribute("fill", "#070c17");
+      sphere.setAttribute("stroke", "rgba(148, 163, 184, 0.2)");
+      sphere.setAttribute("stroke-width", "1.2");
+      rootG.appendChild(sphere);
+    }
+
+    // 2. Graticule (Latitude / Longitude Grid Lines)
+    const graticule = d3.geoGraticule().step([20, 20]);
+    const gratPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    gratPath.setAttribute("d", pathGen(graticule()) || "");
+    gratPath.setAttribute("fill", "none");
+    gratPath.setAttribute("stroke", "rgba(148, 163, 184, 0.08)");
+    gratPath.setAttribute("stroke-width", "0.8");
+    rootG.appendChild(gratPath);
+
+    // 3. Real Open-Source World Countries (177 Countries from Natural Earth 110m)
+    worldAtlasFeatures.forEach((feature) => {
+      const dStr = pathGen(feature);
+      if (!dStr) return;
+
+      const countryId = String(feature.id || "").padStart(3, "0");
+      const riskInfo = COUNTRY_RISK_INDEX[countryId];
+      const countryName = feature.properties?.name || riskInfo?.name || "Sovereign Territory";
+
+      let fillColor = "rgba(30, 41, 59, 0.72)";
+      let strokeColor = "rgba(148, 163, 184, 0.28)";
+      let strokeWidth = "0.75";
+
+      if (riskInfo) {
+        const showHighlight =
+          layerFilter === "all" ||
+          layerFilter === riskInfo.level ||
+          (layerFilter === "nuclear" && riskInfo.level === "nuclear") ||
+          (layerFilter === "flashpoint" && riskInfo.level === "flashpoint");
+
+        if (showHighlight) {
+          if (riskInfo.level === "nuclear") {
+            fillColor = "rgba(255, 59, 48, 0.34)";
+            strokeColor = "rgba(255, 85, 75, 0.85)";
+            strokeWidth = "1.2";
+          } else if (riskInfo.level === "flashpoint") {
+            fillColor = "rgba(255, 149, 0, 0.32)";
+            strokeColor = "rgba(255, 179, 64, 0.85)";
+            strokeWidth = "1.2";
+          } else if (riskInfo.level === "climate") {
+            fillColor = "rgba(168, 85, 247, 0.28)";
+            strokeColor = "rgba(192, 132, 252, 0.8)";
+            strokeWidth = "1.1";
+          }
+        }
+      }
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", dStr);
+      path.setAttribute("fill", fillColor);
+      path.setAttribute("stroke", strokeColor);
+      path.setAttribute("stroke-width", strokeWidth);
+      path.setAttribute("class", "real-country-path");
+
+      const titleTag = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      titleTag.textContent = riskInfo
+        ? `${countryName} — Click to inspect strategic intelligence dossier`
+        : countryName;
+      path.appendChild(titleTag);
+
+      path.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (riskInfo) {
+          const matchedNode = [...GEO_NODES, ...CLIMATE_STRESS_NODES].find(
+            (n) => n.id === riskInfo.nodeId
+          );
+          if (matchedNode) {
+            inspectMapNode(matchedNode);
+            return;
+          }
+        }
+        inspectMapNode({
+          id: `country-${countryId}`,
+          name: countryName,
+          lat: 0,
+          lon: 0,
+          layer: "diplomacy",
+          warheads: 0,
+          firstTest: "Non-Nuclear Weapons State (NPT Signatory)",
+          status: "MONITORED TERRITORY",
+          desc: `${countryName} is a non-nuclear sovereign state under the Treaty on the Non-Proliferation of Nuclear Weapons (NPT) framework. Click any red, amber, or cyan marker to inspect active nuclear arsenals, 2026 flashpoints, or live seismic anomalies.`
+        });
+      });
+
+      rootG.appendChild(path);
+    });
+
+    // 4. Great-Circle Geodesic Trajectory Arc (ICBM / Strategic Watch Corridor)
+    if (activeMissileArc && (layerFilter === "all" || layerFilter === "nuclear")) {
+      const arcFeature = {
+        type: "LineString",
+        coordinates: [activeMissileArc.from, activeMissileArc.to]
+      };
+      const arcD = pathGen(arcFeature);
+      if (arcD) {
+        const arcPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        arcPath.setAttribute("d", arcD);
+        arcPath.setAttribute("fill", "none");
+        arcPath.setAttribute("stroke", "#ff3b30");
+        arcPath.setAttribute("stroke-width", "2.2");
+        arcPath.setAttribute("stroke-dasharray", "6 5");
+        arcPath.setAttribute("opacity", "0.85");
+        rootG.appendChild(arcPath);
+      }
+    }
   }
 
-  // Stylized Continent Polygons (Tactical Command Projection)
-  const continents = [
-    // North America
-    "M 80,65 L 245,60 L 310,130 L 250,225 L 185,245 L 115,175 Z",
-    // South America
-    "M 245,255 L 335,280 L 365,355 L 315,455 L 270,440 L 240,320 Z",
-    // Europe
-    "M 455,75 L 575,65 L 595,145 L 470,160 L 445,125 Z",
-    // Africa
-    "M 450,175 L 585,175 L 625,275 L 565,405 L 505,395 L 445,260 Z",
-    // Asia
-    "M 580,65 L 865,75 L 895,195 L 785,275 L 645,235 L 590,155 Z",
-    // Australia
-    "M 765,325 L 885,325 L 895,405 L 785,415 Z"
-  ];
-
-  continents.forEach((d) => {
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", d);
-    path.setAttribute("fill", "rgba(30, 41, 59, 0.55)");
-    path.setAttribute("stroke", "rgba(148, 163, 184, 0.22)");
-    path.setAttribute("stroke-width", "1.5");
-    svg.appendChild(path);
-  });
-
-  const allNodes = [...GEO_NODES, ...liveMapMarkers].filter((n) =>
+  // 5. Plot Strategic Intelligence Markers (Nuclear States, 2026 Flashpoints, Climate Zones, Live USGS/NASA)
+  const allNodes = [...GEO_NODES, ...CLIMATE_STRESS_NODES, ...liveMapMarkers].filter((n) =>
     layerFilter === "all" ? true : n.layer === layerFilter
   );
 
   allNodes.forEach((node) => {
-    const { x, y } = projectLatLon(node.lat, node.lon);
+    let x = 0;
+    let y = 0;
+
+    if (hasD3 && currentActiveProjection) {
+      // Check hemisphere visibility when in 3D Orthographic Globe mode
+      if (mapProjectionMode === "3d") {
+        const centerLon = -globeRotation[0];
+        const centerLat = -globeRotation[1];
+        const distRad = window.d3.geoDistance([node.lon, node.lat], [centerLon, centerLat]);
+        if (distRad > Math.PI / 2 - 0.04) return; // Hidden on back side of the 3D Globe
+      }
+      const projected = currentActiveProjection([node.lon, node.lat]);
+      if (!projected) return;
+      x = projected[0];
+      y = projected[1];
+    } else {
+      x = ((node.lon + 180) / 360) * width;
+      y = ((90 - node.lat) / 180) * height;
+    }
+
     const color =
       node.layer === "nuclear"
         ? "#ff3b30"
         : node.layer === "flashpoint"
         ? "#ff9500"
+        : node.layer === "climate"
+        ? "#a855f7"
         : "#38bdf8";
 
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -397,51 +875,61 @@ function drawWorldMap(layerFilter) {
     const halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     halo.setAttribute("cx", x.toFixed(1));
     halo.setAttribute("cy", y.toFixed(1));
-    halo.setAttribute("r", node.layer === "nuclear" ? "14" : "11");
+    halo.setAttribute("r", node.layer === "nuclear" ? "13" : "10");
     halo.setAttribute("fill", color);
-    halo.setAttribute("fill-opacity", "0.22");
+    halo.setAttribute("fill-opacity", "0.26");
     g.appendChild(halo);
 
     const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     dot.setAttribute("cx", x.toFixed(1));
     dot.setAttribute("cy", y.toFixed(1));
-    dot.setAttribute("r", node.layer === "nuclear" ? "6" : "5");
+    dot.setAttribute("r", node.layer === "nuclear" ? "5.5" : "4.5");
     dot.setAttribute("fill", color);
     dot.setAttribute("stroke", "#ffffff");
     dot.setAttribute("stroke-width", "1.5");
     g.appendChild(dot);
 
-    if (node.layer !== "live") {
+    if (node.layer === "nuclear" || node.layer === "flashpoint") {
       const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      label.setAttribute("x", (x + 9).toFixed(1));
-      label.setAttribute("y", (y + 4).toFixed(1));
-      label.setAttribute("fill", "#e2e8f0");
-      label.setAttribute("font-size", "10");
+      label.setAttribute("x", (x + 8).toFixed(1));
+      label.setAttribute("y", (y + 3.5).toFixed(1));
+      label.setAttribute("fill", "#f8fafc");
+      label.setAttribute("font-size", "9.5");
+      label.setAttribute("font-weight", "600");
       label.setAttribute("font-family", "JetBrains Mono, monospace");
+      label.style.textShadow = "0 1px 4px #000000";
       label.textContent = node.name.split(" ")[0];
       g.appendChild(label);
     }
 
-    g.addEventListener("click", () => inspectMapNode(node));
-    svg.appendChild(g);
+    g.addEventListener("click", (e) => {
+      e.stopPropagation();
+      inspectMapNode(node);
+    });
+    rootG.appendChild(g);
   });
+
+  svg.appendChild(fragment);
 }
 
 function inspectMapNode(node) {
+  // 1. Update index.html & intelligence.html Inspector Card (#map-insp-*)
   const typeEl = document.getElementById("map-insp-type");
   const titleEl = document.getElementById("map-insp-title");
   const statEl = document.getElementById("map-insp-stat");
   const descEl = document.getElementById("map-insp-desc");
   const metaEl = document.getElementById("map-insp-meta");
 
-  if (typeEl) {
-    typeEl.textContent =
-      node.layer === "nuclear"
-        ? "☢️ NUCLEAR-ARMED STATE DOSSIER"
-        : node.layer === "flashpoint"
-        ? "⚡ 2026 BULLETIN FLASHPOINT"
-        : "🛰️ LIVE USGS TELEMETRY NODE";
-  }
+  const badgeText =
+    node.layer === "nuclear"
+      ? "☢️ NUCLEAR-ARMED STATE DOSSIER"
+      : node.layer === "flashpoint"
+      ? "⚡ 2026 BULLETIN FLASHPOINT"
+      : node.layer === "climate"
+      ? "🌡️ PLANETARY CLIMATE HAZARD"
+      : "🛰️ LIVE TELEMETRY NODE";
+
+  if (typeEl) typeEl.textContent = badgeText;
   if (titleEl) titleEl.textContent = node.name;
   if (statEl) {
     statEl.textContent =
@@ -450,11 +938,36 @@ function inspectMapNode(node) {
   if (descEl) descEl.textContent = node.desc;
   if (metaEl) {
     metaEl.innerHTML = `
-      <div><strong>Coordinates:</strong> <span class="mono">${node.lat.toFixed(2)}°, ${node.lon.toFixed(2)}°</span></div>
+      <div><strong>Coordinates:</strong> <span class="mono">${Number(node.lat).toFixed(2)}°, ${Number(node.lon).toFixed(2)}°</span></div>
       <div><strong>Key Milestone:</strong> <span class="mono">${node.firstTest}</span></div>
       <div><strong>Treaty / Watch Status:</strong> <span class="mono">${node.status}</span></div>
     `;
   }
+
+  // 2. Update map.html Detail Drawer (#node-drawer-*)
+  const drawerTitle = document.getElementById("node-drawer-title");
+  const drawerStatus = document.getElementById("node-drawer-status");
+  const drawerDesc = document.getElementById("node-drawer-desc");
+  const drawerWarheads = document.getElementById("node-drawer-warheads");
+  const drawerTest = document.getElementById("node-drawer-test");
+
+  if (drawerTitle) drawerTitle.textContent = node.name;
+  if (drawerStatus) {
+    drawerStatus.textContent = node.status || badgeText;
+    drawerStatus.className =
+      "status-pill " +
+      (node.layer === "nuclear"
+        ? "status-critical"
+        : node.layer === "flashpoint"
+        ? "status-high"
+        : "status-elevated");
+  }
+  if (drawerDesc) drawerDesc.textContent = node.desc;
+  if (drawerWarheads) {
+    drawerWarheads.textContent =
+      node.warheads > 0 ? `~${node.warheads.toLocaleString()} Warheads` : "Non-Nuclear / Hazard Node";
+  }
+  if (drawerTest) drawerTest.textContent = node.firstTest || "Active Monitor";
 }
 
 // ============================================================================
@@ -969,10 +1482,40 @@ function initSituationDispatchTool() {
           btn.style.background = "";
         }, 2500);
       }).catch(() => {
-        alert("Dispatch generated! Please copy from the preview box below.");
+        const origText = btn.innerHTML;
+        btn.innerHTML = "⚠ Please copy from preview below";
+        btn.style.background = "#ff9500";
+        setTimeout(() => {
+          btn.innerHTML = origText;
+          btn.style.background = "";
+        }, 2500);
       });
     }
   });
+}
+
+function toRad(deg) {
+  return (deg * Math.PI) / 180;
+}
+
+function computeGreatCircleDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// Export for Node.js testing environment (without breaking browser usage)
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    projectLatLon,
+    toRad,
+    computeGreatCircleDistance
+  };
 }
 
 // ============================================================================
@@ -1006,21 +1549,6 @@ function initBallisticCalculator() {
     "paris": { lat: 48.86, lon: 2.35, name: "Paris" },
     "tokyo": { lat: 35.68, lon: 139.69, name: "Tokyo" }
   };
-
-  function toRad(deg) {
-    return (deg * Math.PI) / 180;
-  }
-
-  function computeGreatCircleDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // km
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
 
   function updateFlightCalculations() {
     const orig = origins[originSelect.value] || origins["usa-minot"];
@@ -1118,7 +1646,8 @@ function initCustomScenarioBuilder() {
   if (form && nameInput && deltaInput) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const title = nameInput.value.trim();
+      // Security: Escape HTML entities from user input to prevent DOM XSS in scenario cards
+      const title = nameInput.value.trim().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
       const deltaVal = Number(deltaInput.value);
       if (!title) return;
 
@@ -1128,9 +1657,23 @@ function initCustomScenarioBuilder() {
       const chip = document.createElement("div");
       chip.className = "preset-chip";
       chip.style.borderColor = badgeColor;
-      chip.innerHTML = `<strong>${title}</strong> (${sign}) <span style="margin-left:6px; cursor:pointer;" title="Remove">✕</span>`;
 
-      chip.querySelector("span").addEventListener("click", () => {
+      const strongEl = document.createElement("strong");
+      strongEl.textContent = title;
+
+      const textNode = document.createTextNode(` (${sign}) `);
+
+      const closeSpan = document.createElement("span");
+      closeSpan.style.marginLeft = "6px";
+      closeSpan.style.cursor = "pointer";
+      closeSpan.title = "Remove";
+      closeSpan.textContent = "✕";
+
+      chip.appendChild(strongEl);
+      chip.appendChild(textNode);
+      chip.appendChild(closeSpan);
+
+      closeSpan.addEventListener("click", () => {
         chip.remove();
         if (typeof updateSimulatorCalculation === "function") updateSimulatorCalculation();
       });
