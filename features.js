@@ -415,10 +415,10 @@ function injectMapModeToolbar(svg) {
       <button type="button" class="map-mode-btn" data-proj-mode="3d">🌐 Interactive 3D Globe</button>
     </div>
     <div class="map-nav-controls">
-      <button type="button" class="map-ctrl-btn hidden" id="globe-spin-btn" title="Toggle 3D Globe Auto-Rotation">↻ Auto-Spin: Off</button>
+      <button type="button" class="map-ctrl-btn hidden" id="globe-spin-btn" title="Toggle 3D Globe Auto-Rotation" aria-label="Toggle 3D Globe Auto-Rotation">↻ Auto-Spin: Off</button>
       <button type="button" class="map-ctrl-btn" id="map-zoom-in-btn" title="Zoom In" aria-label="Zoom In">＋</button>
       <button type="button" class="map-ctrl-btn" id="map-zoom-out-btn" title="Zoom Out" aria-label="Zoom Out">－</button>
-      <button type="button" class="map-ctrl-btn" id="map-reset-view-btn" title="Reset Map / Globe View"><span aria-hidden="true">⟲</span> Reset</button>
+      <button type="button" class="map-ctrl-btn" id="map-reset-view-btn" title="Reset Map / Globe View" aria-label="Reset Map or Globe View"><span aria-hidden="true">⟲</span> Reset</button>
     </div>
   `;
   parent.insertBefore(toolbar, svg);
@@ -489,6 +489,7 @@ function injectMapModeToolbar(svg) {
   let isDragging = false;
   let lastX = 0;
   let lastY = 0;
+  let dragRafId = null;
 
   svg.addEventListener("pointerdown", (e) => {
     if (e.target.closest(".map-node")) return;
@@ -509,11 +510,19 @@ function injectMapModeToolbar(svg) {
     if (mapProjectionMode === "3d") {
       globeRotation[0] += dx * 0.35;
       globeRotation[1] = Math.max(-75, Math.min(75, globeRotation[1] - dy * 0.35));
-      drawWorldMap(activeMapLayer);
     } else if (mapZoomTransform.k > 1) {
       mapZoomTransform.x += dx;
       mapZoomTransform.y += dy;
-      drawWorldMap(activeMapLayer);
+    } else {
+      return;
+    }
+
+    if (!dragRafId) {
+      dragRafId = requestAnimationFrame(() => {
+        // Bolt: Throttled rendering of the SVG map layout during dragging
+        drawWorldMap(activeMapLayer);
+        dragRafId = null;
+      });
     }
   });
 
