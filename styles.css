@@ -798,7 +798,7 @@ a:hover {
 }
 
 .search-bar-form input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: var(--accent-blue);
 }
 
@@ -1952,4 +1952,5 @@ a:hover {
   border-color: #ff3b30;
   color: #ffffff;
 }
+
 

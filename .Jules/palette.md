@@ -1,3 +1,4 @@
-## 2024-05-18 - Missing global focus-visible states
-**Learning:** Keyboard navigation lacks visual feedback across interactive elements (buttons, links, inputs). `outline: none` is used without a fallback, making tab-navigation difficult for accessibility.
-**Action:** Add global `:focus-visible` styles to provide clear, accessible focus rings across all interactive elements, following the `DESIGN_SYSTEM.md` token patterns (`var(--accent-blue)`).
+## 2024-05-18 - Improve Global Keyboard Focus Visibility and WHCM Compatibility
+**Learning:** The application had `outline: none;` on inputs and lacked explicit keyboard focus rings on interactive elements, making it difficult for keyboard users to track focus. When disabling default outlines, using `outline: 2px solid transparent;` instead of `outline: none;` ensures the outline still renders in Windows High Contrast Mode (WHCM). Modern browsers curve the outline to match the element's existing border-radius.
+**Action:** Changed `.search-bar-form input:focus` to `outline: 2px solid transparent;` for WHCM support and implemented a global `:focus-visible` rule using existing design tokens (`var(--accent-blue)`) with an offset to provide a clear focus ring without impacting standard mouse click behavior.
+
