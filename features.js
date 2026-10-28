@@ -459,23 +459,25 @@ function injectMapModeToolbar(svg) {
   document.getElementById("map-zoom-in-btn")?.addEventListener("click", () => {
     if (mapProjectionMode === "3d") {
       globeScale = Math.min(460, globeScale * 1.22);
+      drawWorldMap(activeMapLayer);
     } else {
       mapZoomTransform.k = Math.min(5, mapZoomTransform.k * 1.3);
+      updateMapTransform2D();
     }
-    drawWorldMap(activeMapLayer);
   });
 
   document.getElementById("map-zoom-out-btn")?.addEventListener("click", () => {
     if (mapProjectionMode === "3d") {
       globeScale = Math.max(150, globeScale / 1.22);
+      drawWorldMap(activeMapLayer);
     } else {
       mapZoomTransform.k = Math.max(1, mapZoomTransform.k / 1.3);
       if (mapZoomTransform.k === 1) {
         mapZoomTransform.x = 0;
         mapZoomTransform.y = 0;
       }
+      updateMapTransform2D();
     }
-    drawWorldMap(activeMapLayer);
   });
 
   document.getElementById("map-reset-view-btn")?.addEventListener("click", () => {
@@ -520,7 +522,11 @@ function injectMapModeToolbar(svg) {
     if (!dragRafId) {
       dragRafId = requestAnimationFrame(() => {
         // Bolt: Throttled rendering of the SVG map layout during dragging
-        drawWorldMap(activeMapLayer);
+        if (mapProjectionMode === "2d") {
+          updateMapTransform2D();
+        } else {
+          drawWorldMap(activeMapLayer);
+        }
         dragRafId = null;
       });
     }
@@ -532,6 +538,20 @@ function injectMapModeToolbar(svg) {
       svg.style.cursor = "grab";
     }
   });
+}
+
+function updateMapTransform2D() {
+  const rootG = document.querySelector("#world-threat-map > g");
+  if (rootG) {
+    const width = 1000;
+    const height = 500;
+    const cx = width / 2;
+    const cy = height / 2;
+    rootG.setAttribute(
+      "transform",
+      `translate(${cx + mapZoomTransform.x}, ${cy + mapZoomTransform.y}) scale(${mapZoomTransform.k}) translate(${-cx}, ${-cy})`
+    );
+  }
 }
 
 function toggleGlobeAutoSpin(enable) {
