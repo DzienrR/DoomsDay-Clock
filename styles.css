@@ -1954,3 +1954,30 @@ a:hover {
 }
 
 
+
+/* Skip to Content Accessibility Link */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-blue);
+  color: var(--bg-primary);
+  padding: 8px 16px;
+  z-index: 9999;
+  transition: top 0.2s ease;
+  text-decoration: none;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-radius: 0 0 8px 0;
+}
+
+.skip-to-content:focus-visible {
+  top: 0;
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 2px var(--text-main);
+}
+
+/* Make sure main-content doesn't have an outline when focused programmatically via skip link */
+#main-content:focus {
+  outline: none;
+}
