@@ -6,3 +6,7 @@
 **Learning:** Using `outline: none` breaks focus visibility in Windows High Contrast Mode (WHCM) because borders and box-shadows might be overwritten by the OS, leaving users with no focus indicator.
 **Action:** Always use `outline: 2px solid transparent` instead of `outline: none` to ensure WHCM can override the transparent outline with a visible one while keeping it invisible in normal modes.
 
+
+## 2026-10-29 - Implementing Skip-to-Content Link
+**Learning:** When implementing "skip to main content" links in a page that already uses `#top` for back-to-top scrolling, reusing `#top` doesn't work correctly for programmatic focus. The browser will handle `#top` by scrolling to the top, rather than moving focus to the main element.
+**Action:** Always create a distinct ID (like `#main-content`) for the `<main>` tag, add `tabindex="-1"` to allow programmatic focus without putting it in the normal tab order, and add `outline: none` on focus to prevent a large focus ring around the whole page body when the skip link is used.
