@@ -1709,7 +1709,21 @@ function initTimelineArchiveSearch() {
   const searchInput = document.getElementById("timeline-search-input");
   if (!searchInput) return;
 
-  searchInput.addEventListener("input", () => {
+  // ⚡ Bolt Performance Optimization:
+  // Debounce the input event for timeline search to prevent excessive DOM thrashing
+  // when typing rapidly. Without this, the search renders all matching cards on every keystroke.
+  // Impact: Significantly reduces forced reflows and layout recalculations during active searching.
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
+
+  searchInput.addEventListener("input", debounce(() => {
     const query = searchInput.value.trim().toLowerCase();
     const activeFilterBtn = document.querySelector(".tl-filter-btn.active");
     const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.tlFilter : "all";
@@ -1717,5 +1731,5 @@ function initTimelineArchiveSearch() {
     if (typeof renderTimelineCards === "function") {
       renderTimelineCards(activeFilter, query);
     }
-  });
+  }, 250));
 }

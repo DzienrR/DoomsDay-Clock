@@ -4,3 +4,6 @@
 ## 2024-05-16 - [Throttle heavy SVG renders in pointer events]
 **Learning:** Found a performance bottleneck where complex layout rendering (the 3D / 2D interactive SVG map) was being triggered synchronously on every `pointermove` event. This was firing far faster than the browser's refresh rate (e.g. 60+ Hz), causing excessive layout thrashing and degrading interactivity.
 **Action:** Always decouple high-frequency input events (`pointermove`, `scroll`) from heavy rendering logic (like `drawWorldMap`). Use `requestAnimationFrame` with a pending frame flag (e.g. `dragRafId`) to throttle rendering so it only executes when the browser is ready for the next frame.
+## 2024-05-17 - [Debounce frequent DOM rendering in text inputs]
+**Learning:** The timeline search input event fired synchronously on every keystroke. For every single keystroke, `renderTimelineCards` destroyed and rebuilt a significant number of DOM nodes (`timeline-cards-grid`). This led to noticeable jank when searching because layout recalculation blocked the main thread.
+**Action:** Always wrap heavy rendering or data-fetching logic bound to `input` or `keyup` events in a `debounce` function. A delay of 250-300ms is typically enough to allow the user to finish typing a word before triggering the expensive layout work.
