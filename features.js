@@ -520,7 +520,21 @@ function injectMapModeToolbar(svg) {
     if (!dragRafId) {
       dragRafId = requestAnimationFrame(() => {
         // Bolt: Throttled rendering of the SVG map layout during dragging
-        drawWorldMap(activeMapLayer);
+        if (mapProjectionMode === "3d") {
+          drawWorldMap(activeMapLayer);
+        } else {
+          const rootG = document.getElementById("map-root-group");
+          if (rootG) {
+            const cx = 1000 / 2;
+            const cy = 500 / 2;
+            rootG.setAttribute(
+              "transform",
+              `translate(${cx + mapZoomTransform.x}, ${cy + mapZoomTransform.y}) scale(${mapZoomTransform.k}) translate(${-cx}, ${-cy})`
+            );
+          } else {
+            drawWorldMap(activeMapLayer);
+          }
+        }
         dragRafId = null;
       });
     }
@@ -684,6 +698,7 @@ function drawWorldMap(layerFilter = "all") {
   fragment.appendChild(defs);
 
   const rootG = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  rootG.id = "map-root-group";
   if (mapProjectionMode === "2d" && (mapZoomTransform.k !== 1 || mapZoomTransform.x !== 0 || mapZoomTransform.y !== 0)) {
     const cx = width / 2;
     const cy = height / 2;
