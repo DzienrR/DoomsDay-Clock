@@ -4,3 +4,6 @@
 ## 2024-05-16 - [Throttle heavy SVG renders in pointer events]
 **Learning:** Found a performance bottleneck where complex layout rendering (the 3D / 2D interactive SVG map) was being triggered synchronously on every `pointermove` event. This was firing far faster than the browser's refresh rate (e.g. 60+ Hz), causing excessive layout thrashing and degrading interactivity.
 **Action:** Always decouple high-frequency input events (`pointermove`, `scroll`) from heavy rendering logic (like `drawWorldMap`). Use `requestAnimationFrame` with a pending frame flag (e.g. `dragRafId`) to throttle rendering so it only executes when the browser is ready for the next frame.
+## 2024-05-17 - [Optimize 2D map panning via SVG transforms]
+**Learning:** Found a performance bottleneck where panning or zooming the 2D map completely destroyed and recreated the complex SVG layout (calling `drawWorldMap()`) on every pointer movement frame, despite only the viewport changing. This O(N) re-rendering of all 177+ paths and markers during a drag severely degrades panning performance.
+**Action:** Decouple viewport translation/scaling from layout creation. During 2D map panning and zooming, update the `transform` attribute of the existing SVG root `<g>` element directly instead of re-running the entire `drawWorldMap()` routine.
