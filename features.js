@@ -456,33 +456,52 @@ function injectMapModeToolbar(svg) {
     toggleGlobeAutoSpin(!globeAutoRotate);
   });
 
+  function apply2DMapTransform() {
+    const svg = document.getElementById("world-threat-map");
+    if (!svg) return;
+    const rootG = svg.querySelector("g.map-root");
+    if (!rootG) return;
+    const cx = 500;
+    const cy = 250;
+    rootG.setAttribute(
+      "transform",
+      `translate(${cx + mapZoomTransform.x}, ${cy + mapZoomTransform.y}) scale(${mapZoomTransform.k}) translate(${-cx}, ${-cy})`
+    );
+  }
+
   document.getElementById("map-zoom-in-btn")?.addEventListener("click", () => {
     if (mapProjectionMode === "3d") {
       globeScale = Math.min(460, globeScale * 1.22);
+      drawWorldMap(activeMapLayer);
     } else {
       mapZoomTransform.k = Math.min(5, mapZoomTransform.k * 1.3);
+      apply2DMapTransform();
     }
-    drawWorldMap(activeMapLayer);
   });
 
   document.getElementById("map-zoom-out-btn")?.addEventListener("click", () => {
     if (mapProjectionMode === "3d") {
       globeScale = Math.max(150, globeScale / 1.22);
+      drawWorldMap(activeMapLayer);
     } else {
       mapZoomTransform.k = Math.max(1, mapZoomTransform.k / 1.3);
       if (mapZoomTransform.k === 1) {
         mapZoomTransform.x = 0;
         mapZoomTransform.y = 0;
       }
+      apply2DMapTransform();
     }
-    drawWorldMap(activeMapLayer);
   });
 
   document.getElementById("map-reset-view-btn")?.addEventListener("click", () => {
     globeRotation = [-25, -18, 0];
     globeScale = 225;
     mapZoomTransform = { k: 1, x: 0, y: 0 };
-    drawWorldMap(activeMapLayer);
+    if (mapProjectionMode === "3d") {
+      drawWorldMap(activeMapLayer);
+    } else {
+      apply2DMapTransform();
+    }
   });
 
   // Pointer drag interaction for rotating 3D Globe or panning 2D Map
@@ -519,8 +538,13 @@ function injectMapModeToolbar(svg) {
 
     if (!dragRafId) {
       dragRafId = requestAnimationFrame(() => {
-        // Bolt: Throttled rendering of the SVG map layout during dragging
-        drawWorldMap(activeMapLayer);
+        if (mapProjectionMode === "3d") {
+          // Bolt: Throttled rendering of the SVG map layout during dragging
+          drawWorldMap(activeMapLayer);
+        } else {
+          // Bolt: 2D panning optimization - only update SVG transform, avoid DOM layout rebuild
+          apply2DMapTransform();
+        }
         dragRafId = null;
       });
     }
@@ -684,6 +708,7 @@ function drawWorldMap(layerFilter = "all") {
   fragment.appendChild(defs);
 
   const rootG = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  rootG.setAttribute("class", "map-root");
   if (mapProjectionMode === "2d" && (mapZoomTransform.k !== 1 || mapZoomTransform.x !== 0 || mapZoomTransform.y !== 0)) {
     const cx = width / 2;
     const cy = height / 2;
