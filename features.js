@@ -997,24 +997,31 @@ function initCityVisualizer() {
     let currentTemp = city.baseTempC;
     let sourceLabel = "Climatological Baseline";
 
-    // Try live Open-Meteo current weather API (CORS-enabled, keyless)
-    try {
-      const params = new URLSearchParams({
-        latitude: String(city.lat),
-        longitude: String(city.lon),
-        current_weather: "true"
-      });
-      const endpoint = ["https://api.open-meteo.com", "v1", "forecast"].join("/") + "?" + params.toString();
-      const res = await fetch(endpoint);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof data?.current_weather?.temperature === "number") {
-          currentTemp = data.current_weather.temperature;
-          sourceLabel = "Open-Meteo Live Telemetry";
+    // ⚡ Bolt: Cache API response to prevent redundant network calls on scenario change
+    if (city._cachedTemp !== undefined) {
+      currentTemp = city._cachedTemp;
+      sourceLabel = "Open-Meteo Live Telemetry (Cached)";
+    } else {
+      // Try live Open-Meteo current weather API (CORS-enabled, keyless)
+      try {
+        const params = new URLSearchParams({
+          latitude: String(city.lat),
+          longitude: String(city.lon),
+          current_weather: "true"
+        });
+        const endpoint = ["https://api.open-meteo.com", "v1", "forecast"].join("/") + "?" + params.toString();
+        const res = await fetch(endpoint);
+        if (res.ok) {
+          const data = await res.json();
+          if (typeof data?.current_weather?.temperature === "number") {
+            currentTemp = data.current_weather.temperature;
+            city._cachedTemp = currentTemp; // Cache the result
+            sourceLabel = "Open-Meteo Live Telemetry";
+          }
         }
+      } catch (e) {
+        // Fallback to baseline
       }
-    } catch (e) {
-      // Fallback to baseline
     }
 
     let deltaTemp = -20;
