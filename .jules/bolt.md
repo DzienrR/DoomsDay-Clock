@@ -4,3 +4,6 @@
 ## 2024-05-16 - [Throttle heavy SVG renders in pointer events]
 **Learning:** Found a performance bottleneck where complex layout rendering (the 3D / 2D interactive SVG map) was being triggered synchronously on every `pointermove` event. This was firing far faster than the browser's refresh rate (e.g. 60+ Hz), causing excessive layout thrashing and degrading interactivity.
 **Action:** Always decouple high-frequency input events (`pointermove`, `scroll`) from heavy rendering logic (like `drawWorldMap`). Use `requestAnimationFrame` with a pending frame flag (e.g. `dragRafId`) to throttle rendering so it only executes when the browser is ready for the next frame.
+## 2026-11-04 - [Add local memoization to City Impact Visualizer API calls]
+**Learning:** Found a performance bottleneck where multi-input UI components (like the City Impact Visualizer) triggered redundant external API fetches on every input change, even when the underlying query parameters (e.g., latitude/longitude) had not changed.
+**Action:** Always implement local memoization (e.g., using a `Map` cache keyed by query parameters) to prevent redundant network requests in multi-input UI components.

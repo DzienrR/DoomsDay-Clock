@@ -991,30 +991,40 @@ function initCityVisualizer() {
     (c, idx) => `<option value="${idx}">${c.name} (${c.zone})</option>`
   ).join("");
 
+  const weatherCache = new Map();
+
   const updateCityImpact = async () => {
     const city = CITIES_DATA[Number(citySelect.value) || 0];
     const mode = modeSelect.value;
     let currentTemp = city.baseTempC;
     let sourceLabel = "Climatological Baseline";
 
-    // Try live Open-Meteo current weather API (CORS-enabled, keyless)
-    try {
-      const params = new URLSearchParams({
-        latitude: String(city.lat),
-        longitude: String(city.lon),
-        current_weather: "true"
-      });
-      const endpoint = ["https://api.open-meteo.com", "v1", "forecast"].join("/") + "?" + params.toString();
-      const res = await fetch(endpoint);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof data?.current_weather?.temperature === "number") {
-          currentTemp = data.current_weather.temperature;
-          sourceLabel = "Open-Meteo Live Telemetry";
+    const cacheKey = `${city.lat},${city.lon}`;
+
+    if (weatherCache.has(cacheKey)) {
+      currentTemp = weatherCache.get(cacheKey);
+      sourceLabel = "Open-Meteo Live Telemetry (Cached)";
+    } else {
+      // Try live Open-Meteo current weather API (CORS-enabled, keyless)
+      try {
+        const params = new URLSearchParams({
+          latitude: String(city.lat),
+          longitude: String(city.lon),
+          current_weather: "true"
+        });
+        const endpoint = ["https://api.open-meteo.com", "v1", "forecast"].join("/") + "?" + params.toString();
+        const res = await fetch(endpoint);
+        if (res.ok) {
+          const data = await res.json();
+          if (typeof data?.current_weather?.temperature === "number") {
+            currentTemp = data.current_weather.temperature;
+            sourceLabel = "Open-Meteo Live Telemetry";
+            weatherCache.set(cacheKey, currentTemp);
+          }
         }
+      } catch (e) {
+        // Fallback to baseline
       }
-    } catch (e) {
-      // Fallback to baseline
     }
 
     let deltaTemp = -20;
