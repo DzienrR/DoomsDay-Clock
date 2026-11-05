@@ -6,3 +6,7 @@
 **Learning:** Using `outline: none` breaks focus visibility in Windows High Contrast Mode (WHCM) because borders and box-shadows might be overwritten by the OS, leaving users with no focus indicator.
 **Action:** Always use `outline: 2px solid transparent` instead of `outline: none` to ensure WHCM can override the transparent outline with a visible one while keeping it invisible in normal modes.
 
+
+## 2024-05-19 - Skip to Content link and page structure
+**Learning:** Adding a "Skip to Content" link for screen reader and keyboard accessibility requires careful handling of IDs when `#top` is used heavily for "Back to Top" links across the app. Targeting the same ID for both programatic focus skipping and visual scrolling creates conflicts.
+**Action:** Targeted a separate ID (`#main-content`) for the "Skip to Content" feature and added `tabindex="-1"` to the `<main>` element, while inserting a `<div id="top"></div>` right before `<main>` to maintain existing `#top` link scrolling actions without conflicting.

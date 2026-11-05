@@ -1954,3 +1954,29 @@ a:hover {
 }
 
 
+
+/* Accessibility: Skip to Content */
+.skip-to-content {
+  position: absolute;
+  top: -1000px;
+  left: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 4px;
+  z-index: 9999;
+  transition: top 0.2s ease;
+  border: 1px solid var(--border-subtle);
+}
+
+.skip-to-content:focus {
+  top: 1rem;
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 2px var(--accent-blue);
+}
+
+main:focus {
+  outline: none;
+}
