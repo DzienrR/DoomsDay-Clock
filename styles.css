@@ -1954,3 +1954,24 @@ a:hover {
 }
 
 
+
+/* Skip to Content Link for Keyboard Accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-red);
+  color: #fff;
+  padding: 8px;
+  z-index: 9999;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: top 0.2s ease;
+  outline: 2px solid transparent;
+}
+.skip-link:focus {
+  top: 0;
+  outline-color: #fff;
+}
