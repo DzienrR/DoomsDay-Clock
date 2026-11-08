@@ -1709,13 +1709,17 @@ function initTimelineArchiveSearch() {
   const searchInput = document.getElementById("timeline-search-input");
   if (!searchInput) return;
 
+  let debounceTimeout;
   searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-    const activeFilterBtn = document.querySelector(".tl-filter-btn.active");
-    const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.tlFilter : "all";
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      const query = searchInput.value.trim().toLowerCase();
+      const activeFilterBtn = document.querySelector(".tl-filter-btn.active");
+      const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.tlFilter : "all";
 
-    if (typeof renderTimelineCards === "function") {
-      renderTimelineCards(activeFilter, query);
-    }
+      if (typeof renderTimelineCards === "function") {
+        renderTimelineCards(activeFilter, query);
+      }
+    }, 300);
   });
 }
