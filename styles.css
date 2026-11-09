@@ -1954,3 +1954,22 @@ a:hover {
 }
 
 
+
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-primary);
+  color: var(--accent-blue);
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: bold;
+  border-bottom-right-radius: 4px;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus, .skip-link:focus-visible {
+  top: 0;
+}
