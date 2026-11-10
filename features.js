@@ -1709,13 +1709,18 @@ function initTimelineArchiveSearch() {
   const searchInput = document.getElementById("timeline-search-input");
   if (!searchInput) return;
 
+  // ⚡ Bolt: Debounce search input to prevent layout thrashing on every keystroke
+  let debounceTimer;
   searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-    const activeFilterBtn = document.querySelector(".tl-filter-btn.active");
-    const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.tlFilter : "all";
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const query = searchInput.value.trim().toLowerCase();
+      const activeFilterBtn = document.querySelector(".tl-filter-btn.active");
+      const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.tlFilter : "all";
 
-    if (typeof renderTimelineCards === "function") {
-      renderTimelineCards(activeFilter, query);
-    }
+      if (typeof renderTimelineCards === "function") {
+        renderTimelineCards(activeFilter, query);
+      }
+    }, 300); // 300ms debounce window
   });
 }
