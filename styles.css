@@ -1954,3 +1954,24 @@ a:hover {
 }
 
 
+
+/* Skip Link Styles */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-red);
+  color: #fff;
+  padding: 8px;
+  z-index: 1000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus, .skip-link:focus-visible {
+  top: 0;
+  outline: 2px solid var(--accent-blue);
+}
+
+main:focus {
+  outline: 2px solid transparent;
+}
