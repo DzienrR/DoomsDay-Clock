@@ -1954,3 +1954,19 @@ a:hover {
 }
 
 
+
+/* Skip to Content Link */
+.skip-link {
+  position: absolute;
+  top: 1rem;
+  left: 1.5rem;
+  transform: translateY(-150%);
+  z-index: 1000;
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid transparent;
+}
