@@ -1709,13 +1709,23 @@ function initTimelineArchiveSearch() {
   const searchInput = document.getElementById("timeline-search-input");
   if (!searchInput) return;
 
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-    const activeFilterBtn = document.querySelector(".tl-filter-btn.active");
-    const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.tlFilter : "all";
+  let debounceTimeout = null;
 
-    if (typeof renderTimelineCards === "function") {
-      renderTimelineCards(activeFilter, query);
-    }
+  searchInput.addEventListener("input", () => {
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+
+    // ⚡ Bolt Performance Optimization:
+    // Debounce the timeline search input by 300ms.
+    // Impact: Prevents expensive DOM reads and layout thrashing (renderTimelineCards)
+    // from firing synchronously on every keystroke, keeping the main thread clear.
+    debounceTimeout = setTimeout(() => {
+      const query = searchInput.value.trim().toLowerCase();
+      const activeFilterBtn = document.querySelector(".tl-filter-btn.active");
+      const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.tlFilter : "all";
+
+      if (typeof renderTimelineCards === "function") {
+        renderTimelineCards(activeFilter, query);
+      }
+    }, 300);
   });
 }
